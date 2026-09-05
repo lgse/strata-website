@@ -1,0 +1,588 @@
+/* Native-app chrome, aligned with the supplied Strata reference capture. */
+.app-window .app-content {
+  height: 430px;
+}
+.app-window .app-toolbar {
+  gap: 18px;
+  overflow: visible;
+}
+.app-window .app-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  color: var(--accent-ink);
+  background: transparent;
+}
+.app-window .app-sidebar-toggle:hover {
+  background: var(--muted);
+}
+.app-window .app-breadcrumb {
+  gap: 13px;
+}
+.app-window .breadcrumb-root {
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.app-window .breadcrumb-parent {
+  word-spacing: 7px;
+}
+.app-window .app-tools {
+  gap: 12px;
+}
+.app-window .app-tools > button,
+.app-window .app-view-options > button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: var(--accent-ink);
+  border-radius: 4px;
+}
+.app-window .app-tools > button:hover,
+.app-window .app-view-options > button:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.app-view-options {
+  position: relative;
+}
+.app-view-popover {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  z-index: 30;
+  width: 220px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 12px 40px #0005;
+}
+.view-section-label {
+  display: block;
+  padding: 5px 8px;
+  font-size: 9px;
+  color: var(--faint);
+}
+.app-window .app-view-popover button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  font-size: 11px;
+  text-align: left;
+}
+.app-view-popover button > span {
+  flex: 1;
+}
+.app-view-popover button > svg {
+  color: var(--accent-ink);
+}
+.app-view-popover button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--ink);
+}
+.view-section {
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  padding-top: 7px;
+}
+.view-section label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  padding: 7px 8px;
+  cursor: pointer;
+  color: var(--soft);
+}
+.view-section input {
+  accent-color: var(--accent);
+  margin: 0;
+  width: 14px;
+  height: 14px;
+}
+.app-window .app-tools > button:disabled {
+  cursor: default;
+  background: transparent;
+}
+.app-window.sidebar-hidden .app-sidebar {
+  display: none;
+}
+.app-window .app-sidebar {
+  width: 185px;
+  padding: 8px 9px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.app-window .sidebar-group + .sidebar-group {
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.app-window .sidebar-group .sidebar-heading {
+  padding: 1px 9px 5px;
+  font-size: 8px;
+  letter-spacing: 0.4px;
+}
+.app-window .sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 5px 9px;
+  min-height: 25px;
+  text-align: left;
+  background: transparent;
+  border-radius: 4px;
+  color: var(--soft);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.app-window .sidebar-item > svg {
+  color: var(--accent-ink);
+}
+.app-window button.sidebar-item:hover {
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--ink);
+}
+.app-window .sidebar-item.sidebar-active {
+  background: color-mix(in srgb, var(--accent) 16%, var(--background)) !important;
+  color: var(--ink) !important;
+}
+.app-window .device-name {
+  font-size: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-window .device-name + svg {
+  margin-left: auto;
+}
+.app-window .pane-title {
+  gap: 8px;
+}
+.app-window .pane-title > .pane-location {
+  color: var(--accent-ink);
+  margin-right: auto;
+  min-width: 0;
+}
+.app-window .pane-navigation {
+  gap: 2px;
+}
+.app-window .pane-navigation button:disabled {
+  opacity: 0.3;
+  cursor: default;
+  background: none;
+}
+.app-window .mode-columns .pane-navigation,
+.app-window .mode-grid .pane-navigation,
+.app-window .browser-area:not(.preview-hidden) .pane-navigation {
+  display: none;
+}
+.app-window .pane-title button {
+  color: var(--accent-ink);
+}
+.app-window .pane-title button:hover,
+.app-window .pane-title button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--accent) 12%, var(--background));
+}
+.app-window .pane-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.app-window .pane-actions > button,
+.app-window .pane-sort-options > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border-radius: 3px;
+  color: var(--accent-ink);
+}
+.app-window .pane-sort-options > summary {
+  list-style: none;
+  cursor: pointer;
+}
+.app-window .pane-sort-options > summary::-webkit-details-marker {
+  display: none;
+}
+.app-window .pane-sort-options > summary::marker {
+  content: '';
+}
+.app-window .pane-actions svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+.app-window .pane-actions > button,
+.app-window .pane-sort-options {
+  flex-shrink: 0;
+}
+.app-window .pane-sort-options[open] > summary,
+.app-window .pane-sort-options > summary:hover {
+  background: color-mix(in srgb, var(--accent) 12%, var(--background));
+}
+.pane-sort-options {
+  position: relative;
+}
+.pane-sort-popover {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  z-index: 25;
+  width: 190px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  box-shadow: 0 8px 30px #0005;
+}
+.pane-sort-heading {
+  font-size: 8px;
+  letter-spacing: 0.6px;
+  color: var(--faint);
+}
+.pane-sort-popover > p {
+  font-size: 10px;
+  margin-top: 6px;
+}
+.app-window .pane-sort-popover > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 9px;
+  margin-block: 8px;
+  padding: 7px;
+  background: var(--panel);
+}
+.pane-sort-popover > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+}
+.pane-sort-popover input {
+  accent-color: var(--accent);
+  margin: 0;
+}
+.miller-parent .pane-sort-popover {
+  left: 0;
+  right: auto;
+}
+.miller-parent:has(.demo-search, .file-group-heading) .column-watermark {
+  display: none;
+}
+.app-window .miller-parent .file-group-heading {
+  padding-block: 2px;
+}
+@media (max-width: 1000px) {
+  .app-window .mode-columns .pane-title {
+    height: 58px;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 3px;
+    padding-block: 4px;
+  }
+  .app-window .mode-columns .pane-location {
+    flex-basis: 100%;
+  }
+  .app-window .mode-columns .pane-actions {
+    margin-left: auto;
+  }
+}
+@media (max-width: 620px) {
+  /* Both columns simplify identically on phones; no mismatched icon subsets. */
+  .app-window .mode-columns .pane-actions > [data-pane-action='refresh'],
+  .app-window .mode-columns .pane-actions > [data-pane-action='sort'] {
+    display: none;
+  }
+}
+.app-window .mode-column .file-pane {
+  padding-inline: 0;
+}
+.app-window .mode-column .pane-title {
+  height: 43px;
+  padding-inline: 10px;
+  margin-bottom: 0;
+}
+.app-window .browser-area.preview-hidden .file-pane {
+  flex: 1;
+  width: auto;
+  border-right: 0;
+}
+.app-window .mode-column {
+  --table-columns: minmax(100px, 1fr) 100px 75px 95px 90px;
+}
+.app-window .mode-column .table-heading {
+  display: grid;
+  grid-template-columns: var(--table-columns);
+  gap: 0;
+  padding: 0;
+  height: 30px;
+  margin-bottom: 5px;
+}
+.app-window .mode-column .table-heading > span {
+  display: flex;
+  align-items: center;
+  padding-inline: 12px;
+  border-right: 1px solid var(--line);
+}
+.app-window .mode-column .table-heading > span:last-child {
+  border-right: 0;
+}
+.app-window .mode-column .file-row {
+  display: grid;
+  grid-template-columns: var(--table-columns);
+  gap: 0;
+  position: relative;
+  min-height: 33px;
+  padding: 0;
+  border-radius: 0;
+  border-color: transparent;
+}
+.app-window .mode-column .file-row > svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.app-window .mode-column .file-name {
+  padding: 8px 10px 8px 35px;
+}
+.app-window .mode-column .file-permissions,
+.app-window .mode-column .file-size,
+.app-window .mode-column .file-type,
+.app-window .mode-column .file-modified {
+  width: auto;
+  padding-inline: 12px;
+  font-size: 9px;
+  color: var(--soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-window .mode-column .file-permissions {
+  color: var(--faint);
+}
+.app-window .mode-column .demo-files {
+  max-height: 310px;
+}
+.app-window .mode-column:not(.preview-hidden) {
+  --table-columns: minmax(90px, 1fr) 65px 90px;
+}
+.app-window
+  .mode-column:not(.preview-hidden)
+  .table-heading
+  > :is(.table-permissions, .table-modified),
+.app-window .mode-column:not(.preview-hidden) .file-row > :is(.file-permissions, .file-modified) {
+  display: none;
+}
+.app-window .app-preview {
+  display: flex;
+  flex-direction: column;
+}
+.app-window :is(.preview-image, .preview-code, .preview-markdown) {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+.app-window .preview-title,
+.app-window .preview-meta {
+  flex-shrink: 0;
+}
+.app-window .preview-meta {
+  padding-bottom: 4px;
+}
+.app-window.density-airy .demo-files .file-row {
+  min-height: 40px;
+}
+.app-window.density-airy .demo-files {
+  max-height: 310px;
+}
+.demo-closed {
+  min-height: 480px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.demo-closed > svg {
+  width: 60px;
+  color: var(--text);
+}
+.demo-closed > h3 {
+  font-family: var(--font-geist), sans-serif;
+  font-size: 24px;
+  letter-spacing: -0.6px;
+}
+
+@media (max-width: 850px) {
+  .app-window .app-sidebar {
+    width: 143px;
+  }
+  .app-window .sidebar-item {
+    font-size: 8px;
+    gap: 7px;
+    padding-inline: 6px;
+  }
+  .app-window .sidebar-item > svg {
+    width: 13px;
+  }
+  .app-window .device-name {
+    font-size: 6px;
+  }
+  .app-window .mode-column {
+    --table-columns: minmax(110px, 1fr) 85px 60px 80px 75px;
+  }
+  .app-window .mode-column :is(.file-permissions, .file-size, .file-type, .file-modified) {
+    font-size: 8px;
+    padding-inline: 8px;
+  }
+}
+@media (max-width: 620px) {
+  .app-window .app-content {
+    height: 295px;
+    position: relative;
+  }
+  .app-window .app-toolbar {
+    height: 41px;
+    padding-inline: 8px;
+    gap: 8px;
+  }
+  .app-window .app-breadcrumb {
+    margin-left: 0;
+    gap: 8px;
+    font-size: 8px;
+  }
+  .app-window .app-breadcrumb .breadcrumb-root {
+    display: inline;
+    font-size: 12px;
+  }
+  .app-window .app-breadcrumb .breadcrumb-parent {
+    display: none;
+  }
+  .app-window .app-tools {
+    margin-left: auto;
+    gap: 3px;
+  }
+  .app-window .app-tools > button,
+  .app-window .app-view-options > button,
+  .app-window .app-sidebar-toggle {
+    width: 26px;
+    height: 26px;
+  }
+  .app-window .app-tools svg {
+    width: 15px;
+    height: 15px;
+  }
+  .app-window .app-sidebar {
+    display: none;
+  }
+  .app-window.sidebar-mobile-open .app-sidebar {
+    display: block;
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 160px;
+    z-index: 15;
+    background: var(--background);
+    box-shadow: 12px 0 25px #0005;
+  }
+  .app-window .sidebar-item {
+    font-size: 10px;
+    min-height: 27px;
+  }
+  .app-window .pane-title {
+    padding-inline: 3px;
+    gap: 3px;
+  }
+  .app-window .pane-title > div {
+    gap: 0;
+  }
+  .app-window .mode-column .pane-title {
+    padding-inline: 5px;
+    height: 36px;
+  }
+  .app-window .mode-column {
+    --table-columns: minmax(90px, 1fr) 47px 65px 55px;
+  }
+  .app-window .mode-column .table-heading > .table-permissions,
+  .app-window .mode-column .file-row > .file-permissions {
+    display: none;
+  }
+  .app-window .mode-column .table-heading {
+    font-size: 6px;
+    height: 25px;
+  }
+  .app-window .mode-column .table-heading > span {
+    padding-inline: 5px;
+  }
+  .app-window .mode-column .file-name {
+    padding-left: 22px;
+    font-size: 7px;
+  }
+  .app-window .mode-column .file-row > svg {
+    left: 7px;
+    width: 11px;
+    height: 11px;
+  }
+  .app-window .mode-column :is(.file-size, .file-type, .file-modified) {
+    padding-inline: 5px;
+    font-size: 6px;
+    display: block;
+  }
+  .app-window .mode-column:not(.preview-hidden) {
+    --table-columns: minmax(75px, 1fr) 40px;
+  }
+  .app-window .mode-column:not(.preview-hidden) .table-heading > :is(.table-type, .table-modified),
+  .app-window .mode-column:not(.preview-hidden) .file-row > :is(.file-type, .file-modified) {
+    display: none;
+  }
+  .app-window .mode-column .demo-files {
+    max-height: 194px;
+  }
+  .app-window .mode-column .file-row {
+    min-height: 30px;
+  }
+  .app-window .app-view-popover {
+    right: -55px;
+    width: 210px;
+  }
+  .app-window .app-view-popover button {
+    min-height: 30px;
+    padding-block: 5px;
+  }
+  .app-window .view-section {
+    margin-top: 5px;
+    padding-top: 4px;
+  }
+  .demo-closed {
+    min-height: 360px;
+    padding: 20px;
+  }
+  .demo-closed > h3 {
+    font-size: 20px;
+  }
+}
