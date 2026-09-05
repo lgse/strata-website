@@ -78,7 +78,7 @@ export function PreviewDemo() {
                   <i />
                   <i />
                   <i />
-                  <small>01 — Navigate every layer</small>
+                  <small>01 / Navigate every layer</small>
                 </div>
                 <div className="format-details">
                   <FileText size={25} />

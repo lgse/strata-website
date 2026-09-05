@@ -152,7 +152,7 @@ export function DemoToolbar(props: ToolbarProps) {
             </div>
           )}
         </div>
-        <button aria-label="Settings" title="Settings — available in the desktop app" disabled>
+        <button aria-label="Settings" title="Settings (available in the desktop app)" disabled>
           <Settings size={18} />
         </button>
         <button aria-label="Close demo window" onClick={props.onClose}>

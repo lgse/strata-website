@@ -7,8 +7,8 @@ test('header shows compact stars with an exact accessible count', async ({ page 
   const badge = page.locator('.site-header .github-link');
   await expect(badge).toBeVisible();
   await expect(badge.locator('.github-star-count')).toHaveText('1.2K');
-  await expect(badge).toHaveAttribute('aria-label', 'Strata on GitHub — 1,234 stars');
-  await expect(badge).toHaveAttribute('title', 'Strata on GitHub — 1,234 stars');
+  await expect(badge).toHaveAttribute('aria-label', 'Strata on GitHub: 1,234 stars');
+  await expect(badge).toHaveAttribute('title', 'Strata on GitHub: 1,234 stars');
   await expect(badge).toHaveAttribute('href', 'https://github.com/lgse/strata');
   for (const width of [320, 390, 620, 700, 850, 900, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });

@@ -24,12 +24,12 @@ export const metadata: Metadata = {
         ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
         : 'http://localhost:3000'),
   ),
-  title: 'Strata — Navigate every layer.',
+  title: 'Strata: Navigate every layer.',
   description: `Meet your new flow. Strata is a fast, keyboard-first Linux file manager built with Rust and GTK4. Miller columns, rich sandboxed previews, and ${themes.length} beautiful themes.`,
   applicationName: 'Strata',
   icons: { icon: '/brand/strata.svg', apple: '/brand/strata.svg' },
   openGraph: {
-    title: 'Strata — Navigate every layer.',
+    title: 'Strata: Navigate every layer.',
     description:
       'A file manager that moves like you think. Native Linux. Rust + GTK4. Entirely yours.',
     type: 'website',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Strata — Navigate every layer.',
+    title: 'Strata: Navigate every layer.',
     description: 'A file manager that moves like you think.',
     images: ['/opengraph-image'],
   },

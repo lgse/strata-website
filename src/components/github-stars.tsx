@@ -41,7 +41,7 @@ export function GitHubStars() {
   const label =
     stars === null
       ? 'Star Strata on GitHub'
-      : `Strata on GitHub — ${exactCount.format(stars)} ${stars === 1 ? 'star' : 'stars'}`;
+      : `Strata on GitHub: ${exactCount.format(stars)} ${stars === 1 ? 'star' : 'stars'}`;
   return (
     <a
       className="github-link"

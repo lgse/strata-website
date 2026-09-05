@@ -562,7 +562,14 @@ test('social image and robots are served, and fonts stay local', async ({ page, 
   });
   await page.goto('/');
   expect(external).toEqual([]);
-  await expect(page).toHaveTitle('Strata — Navigate every layer.');
+  await expect(page).toHaveTitle('Strata: Navigate every layer.');
+  for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) {
+    await expect(page.locator(selector)).toHaveAttribute(
+      'content',
+      'Strata: Navigate every layer.',
+    );
+  }
+  expect(await page.locator('body').innerText()).not.toContain('\u2014');
   const image = await request.get('/opengraph-image');
   expect(image.ok()).toBe(true);
   expect(image.headers()['content-type']).toContain('image/png');
