@@ -25,6 +25,32 @@ type Comparison = {
   permalink_url: string;
 };
 
+type Repository = {
+  html_url: string;
+  stargazers_count: number;
+  forks_count: number;
+  subscribers_count: number;
+  open_issues_count: number;
+  pushed_at: string;
+};
+
+type Issue = {
+  pull_request?: unknown;
+  labels: Array<{ name: string }>;
+  assignees: unknown[];
+  updated_at: string;
+};
+
+type PullRequest = { draft: boolean };
+
+type WorkflowRuns = {
+  workflow_runs: Array<{
+    status: string;
+    conclusion: string | null;
+    html_url: string;
+  }>;
+};
+
 type Interaction = {
   type: number;
   data?: {
@@ -38,11 +64,11 @@ type ChangelogChannel = 'stable' | 'rc' | 'preview';
 function githubHeaders(): HeadersInit {
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github+json',
-    'User-Agent': 'strata-discord-changelog',
+    'User-Agent': 'strata-discord-commands',
     'X-GitHub-Api-Version': '2022-11-28',
   };
-  if (process.env.GITHUB_CHANGELOG_TOKEN)
-    headers.Authorization = `Bearer ${process.env.GITHUB_CHANGELOG_TOKEN}`;
+  const token = process.env.GITHUB_API_TOKEN || process.env.GITHUB_CHANGELOG_TOKEN;
+  if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
 }
 
@@ -78,6 +104,15 @@ function baselineFor(channel: ChangelogChannel, releases: Release[]) {
   return prerelease && releaseTime(prerelease) > releaseTime(stable) ? prerelease : stable;
 }
 
+async function githubJson<T>(path: string, revalidate = 60): Promise<T> {
+  const result = await fetch(`${githubApi}${path}`, {
+    headers: githubHeaders(),
+    next: { revalidate },
+  });
+  if (!result.ok) throw new Error(`GitHub request failed (${result.status}).`);
+  return result.json() as Promise<T>;
+}
+
 async function upcomingChangelog(channel: ChangelogChannel) {
   const releasesResponse = await fetch(`${githubApi}/releases?per_page=100`, {
     headers: githubHeaders(),
@@ -106,6 +141,65 @@ async function upcomingChangelog(channel: ChangelogChannel) {
   return heading + body + footer;
 }
 
+function labelCount(issues: Issue[], ...labels: string[]) {
+  const wanted = new Set(labels);
+  return issues.filter((issue) => issue.labels.some((label) => wanted.has(label.name))).length;
+}
+
+async function repositoryHealth() {
+  const [repo, openItems, pulls, releases, workflows] = await Promise.all([
+    githubJson<Repository>('', 300),
+    githubJson<Issue[]>('/issues?state=open&per_page=100', 60),
+    githubJson<PullRequest[]>('/pulls?state=open&per_page=100', 60),
+    githubJson<Release[]>('/releases?per_page=1', 300),
+    githubJson<WorkflowRuns>('/actions/workflows/ci.yml/runs?branch=main&per_page=1', 60),
+  ]);
+  const issues = openItems.filter((issue) => !issue.pull_request);
+  const issueCount = Math.max(issues.length, repo.open_issues_count - pulls.length);
+  const staleBefore = Date.now() - 30 * 24 * 60 * 60 * 1_000;
+  const stale = issues.filter((issue) => Date.parse(issue.updated_at) < staleBefore).length;
+  const drafts = pulls.filter((pull) => pull.draft).length;
+  const latest = releases[0];
+  const workflow = workflows.workflow_runs[0];
+  const workflowState = !workflow
+    ? 'Unknown'
+    : workflow.status !== 'completed'
+      ? '⏳ Running'
+      : workflow.conclusion === 'success'
+        ? '✅ Passing'
+        : '❌ Failing';
+  const workflowLink = workflow ? `[${workflowState}](${workflow.html_url})` : workflowState;
+  const latestRelease = latest
+    ? `[${latest.tag_name}](${latest.html_url})${
+        latest.published_at ? ` · <t:${Math.floor(Date.parse(latest.published_at) / 1_000)}:R>` : ''
+      }`
+    : 'None';
+  const pushed = Math.floor(Date.parse(repo.pushed_at) / 1_000);
+
+  return [
+    '**Strata repository health**',
+    `⭐ **${repo.stargazers_count.toLocaleString()}** stars · 🍴 **${repo.forks_count.toLocaleString()}** forks · 👀 **${repo.subscribers_count.toLocaleString()}** watching`,
+    '',
+    '**Work queue**',
+    `- Pull requests: **${pulls.length}** open${drafts ? ` · ${drafts} draft` : ''}`,
+    `- Issues: **${issueCount}** open`,
+    `- Bugs: **${labelCount(issues, 'bug')}**`,
+    `- Feature requests: **${labelCount(issues, 'enhancement', 'feature request')}**`,
+    `- Security: **${labelCount(issues, 'security')}**`,
+    `- Needs more information: **${labelCount(issues, 'more info needed')}**`,
+    `- With a linked PR: **${labelCount(issues, 'PR opened')}**`,
+    `- Unassigned: **${issues.filter((issue) => issue.assignees.length === 0).length}**`,
+    `- Stale for 30+ days: **${stale}**`,
+    '',
+    '**Delivery**',
+    `- Main CI: ${workflowLink}`,
+    `- Latest release: ${latestRelease}`,
+    `- Last push: <t:${pushed}:R>`,
+    '',
+    `[Open repository](${repo.html_url})`,
+  ].join('\n');
+}
+
 function response(content: string, status = 200) {
   return Response.json(
     { type: 4, data: { content, flags: discordEphemeral, allowed_mentions: { parse: [] } } },
@@ -131,16 +225,21 @@ export async function POST(request: Request) {
     return new Response('Invalid JSON', { status: 400 });
   }
   if (interaction.type === 1) return Response.json({ type: 1 });
-  if (interaction.type !== 2 || interaction.data?.name !== 'changelog')
-    return response('Unknown command.');
+  if (interaction.type !== 2) return response('Unknown command.');
 
-  const requested = interaction.data.options?.find((option) => option.name === 'channel')?.value;
-  const channel: ChangelogChannel =
-    requested === 'rc' || requested === 'preview' ? requested : 'stable';
   try {
-    return response(await upcomingChangelog(channel));
+    if (interaction.data?.name === 'repo-health') return response(await repositoryHealth());
+    if (interaction.data?.name === 'changelog') {
+      const requested = interaction.data.options?.find(
+        (option) => option.name === 'channel',
+      )?.value;
+      const channel: ChangelogChannel =
+        requested === 'rc' || requested === 'preview' ? requested : 'stable';
+      return response(await upcomingChangelog(channel));
+    }
+    return response('Unknown command.');
   } catch (error) {
-    console.error('Discord changelog command failed', error);
-    return response('The upcoming changelog is temporarily unavailable. Please try again.');
+    console.error(`Discord ${interaction.data?.name || 'unknown'} command failed`, error);
+    return response('Repository information is temporarily unavailable. Please try again.');
   }
 }
