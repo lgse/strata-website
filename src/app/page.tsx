@@ -187,10 +187,6 @@ export default function Home() {
             <span className="orbit-dot" />
           </div>
           <div className="hero-copy">
-            <a href={repository} className="hero-eyebrow" target="_blank" rel="noreferrer">
-              <span className="live-dot" /> A FRESH PERSPECTIVE ON YOUR FILES{' '}
-              <ArrowUpRight size={12} />
-            </a>
             <h1 id="hero-title">
               Navigate
               <br />

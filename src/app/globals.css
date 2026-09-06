@@ -410,20 +410,6 @@ input {
   position: relative;
   z-index: 2;
 }
-.hero-eyebrow {
-  border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--line));
-  background: color-mix(in srgb, var(--surface) 35%, transparent);
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  border-radius: 20px;
-  padding: 6px 11px;
-  font-size: 9px;
-  letter-spacing: 1.55px;
-  font-family: var(--font-jetbrains), monospace;
-  color: var(--soft);
-  animation: enter-up 0.8s both;
-}
 .hero h1 {
   font-size: clamp(72px, 8.4vw, 112px);
   line-height: 0.99;
@@ -2984,11 +2970,6 @@ body:has(dialog[open]) {
   }
   .hero {
     padding-top: 49px;
-  }
-  .hero-eyebrow {
-    font-size: 7px;
-    letter-spacing: 1px;
-    gap: 8px;
   }
   .hero h1 {
     font-size: clamp(65px, 16vw, 91px);
