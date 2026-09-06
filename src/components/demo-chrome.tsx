@@ -7,12 +7,14 @@ import {
   Rows3,
   Download,
   Eject,
+  EyeOff,
   FileText,
   Folder,
   HardDrive,
   Home,
   Image as ImageIcon,
   List,
+  ListChecks,
   Network,
   PanelLeft,
   Settings,
@@ -29,17 +31,16 @@ interface ToolbarProps {
   mode: DemoMode;
   compact: boolean;
   grouped: boolean;
-  previewOpen: boolean;
   onSidebar: () => void;
   onView: (mode: DemoMode) => void;
   onClose: () => void;
   onCompact: (value: boolean) => void;
   onGrouped: (value: boolean) => void;
-  onPreview: (value: boolean) => void;
 }
 
 export function DemoToolbar(props: ToolbarProps) {
   const [viewOpen, setViewOpen] = useState(false);
+  const [hiddenFiles, setHiddenFiles] = useState(false);
   const view = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -102,7 +103,7 @@ export function DemoToolbar(props: ToolbarProps) {
               aria-label="View options"
             >
               <span className="view-section-label">VIEW</span>
-              {demoModes.map(({ id, label, icon: Icon }) => (
+              {demoModes.map(({ id, icon: Icon }) => (
                 <button
                   key={id}
                   aria-pressed={props.mode === id}
@@ -113,7 +114,7 @@ export function DemoToolbar(props: ToolbarProps) {
                   }}
                 >
                   <Icon size={16} />
-                  <span>{label}</span>
+                  <span>{id === 'columns' ? 'Columns' : id === 'grid' ? 'Icons' : 'List'}</span>
                   {props.mode === id && <Check size={15} />}
                 </button>
               ))}
@@ -131,22 +132,27 @@ export function DemoToolbar(props: ToolbarProps) {
                   </button>
                 ))}
               </div>
-              <div className="view-section">
+              <div className="view-section appearance-toggles">
                 <label>
                   <input
                     type="checkbox"
                     checked={props.grouped}
                     onChange={(event) => props.onGrouped(event.target.checked)}
                   />
-                  Group by file type
+                  <ListChecks size={16} />
+                  <span>Group by file type</span>
+                  {props.grouped && <Check size={15} />}
                 </label>
                 <label>
                   <input
                     type="checkbox"
-                    checked={props.previewOpen}
-                    onChange={(event) => props.onPreview(event.target.checked)}
+                    checked={hiddenFiles}
+                    onChange={(event) => setHiddenFiles(event.target.checked)}
                   />
-                  Show preview pane
+                  <EyeOff size={16} />
+                  <span>Hidden files</span>
+                  <kbd>Ctrl+H</kbd>
+                  {hiddenFiles && <Check size={15} />}
                 </label>
               </div>
             </div>

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {
   ChevronRight,
-  Columns3,
   File,
   FileCode2,
   FileImage,
@@ -136,13 +135,11 @@ export function MillerParentPane({ collections, collection, onFolder }: ParentPa
         ))}
         {!entries.length && <p className="demo-empty">No matching entries.</p>}
       </div>
-      <div className="column-watermark" aria-hidden="true">
-        <Columns3 size={22} />
-        <span>A little more perspective.</span>
-      </div>
-      <div className="pane-bottom">
-        <span aria-live="polite">{notice || `${entries.length} items`}</span>
-      </div>
+      {notice && (
+        <span className="pane-notice" aria-live="polite">
+          {notice}
+        </span>
+      )}
     </div>
   );
 }

@@ -49,7 +49,7 @@ test('all explorer modes, folder selection, file previews, filtering, sorting an
   await page.getByRole('textbox', { name: 'Filter demo files' }).fill('no-file-like-this');
   await expect(page.getByText('No matching files.')).toBeVisible();
   await page.getByRole('button', { name: 'Close file search' }).click();
-  await expect(page.locator('.demo-files .file-row')).toHaveCount(5);
+  await expect(page.locator('.demo-files .file-row')).toHaveCount(4);
 });
 
 test('native-style toolbar, navigation, settings and window controls work', async ({
@@ -82,19 +82,19 @@ test('native-style toolbar, navigation, settings and window controls work', asyn
   const viewToggle = app.getByRole('button', { name: 'View options', exact: true });
   await viewToggle.click();
   const view = app.getByRole('group', { name: 'View options', exact: true });
-  await expect(view.getByRole('button', { name: 'Column', exact: true })).toHaveAttribute(
+  await expect(view.getByRole('button', { name: 'List', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
   await view.getByRole('button', { name: 'Airy', exact: true }).click();
   await expect(app).toHaveClass(/density-airy/);
-  await view.getByRole('checkbox', { name: 'Show preview pane' }).check();
-  await expect(app.locator('.app-preview')).toBeVisible();
-  await view.getByRole('button', { name: 'Miller column', exact: true }).click();
+  await expect(view.getByRole('checkbox', { name: 'Hidden files' })).not.toBeChecked();
+  await view.getByRole('button', { name: 'Columns', exact: true }).click();
   await expect(view).not.toBeVisible();
+  await expect(app.locator('.app-preview')).toBeVisible();
   await expect(app.locator('.browser-area')).toHaveClass(/mode-columns/);
   await viewToggle.click();
-  await view.getByRole('button', { name: 'Grid', exact: true }).click();
+  await view.getByRole('button', { name: 'Icons', exact: true }).click();
   await expect(app.locator('.browser-area')).toHaveClass(/mode-grid/);
   await viewToggle.click();
   await page.keyboard.press('Escape');
@@ -293,7 +293,7 @@ test('Miller panes share native icons and keep their controls independent', asyn
   await parent.getByRole('button', { name: 'Filter parent pane' }).click();
   await parent.getByRole('textbox', { name: 'Filter parent entries' }).fill('docs');
   await expect(parent.locator('.folder-row')).toHaveCount(1);
-  await expect(files.locator('.demo-files .file-row')).toHaveCount(5);
+  await expect(files.locator('.demo-files .file-row')).toHaveCount(4);
   await files.getByRole('button', { name: 'Filter demo folder' }).click();
   await files.getByRole('textbox', { name: 'Filter demo files' }).fill('night');
   await expect(files.locator('.demo-files .file-row')).toHaveCount(1);
@@ -323,7 +323,7 @@ test('keyboard navigation and fuzzy filename search work', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'night-drive.png', exact: true }).focus();
   await page.keyboard.press('j');
-  await expect(page.locator('.preview-meta strong')).toHaveText('landscape.png');
+  await expect(page.locator('.preview-meta strong')).toHaveText('brand-guide.md');
   await page.keyboard.press('ArrowUp');
   await expect(page.locator('.preview-meta strong')).toHaveText('night-drive.png');
   const search = page.getByRole('textbox', { name: 'Try fuzzy filename search' });

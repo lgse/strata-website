@@ -586,3 +586,485 @@
     font-size: 20px;
   }
 }
+
+/* The showcase mirrors Strata's tall, terminal-like native window. */
+.app-window .app-content {
+  height: 560px;
+}
+.app-window {
+  font-size: 12px;
+}
+.app-window .app-toolbar {
+  height: 56px;
+  padding-inline: 18px;
+  border-bottom-color: var(--border);
+}
+.app-window .app-breadcrumb .breadcrumb-parent,
+.app-window .app-breadcrumb strong {
+  display: none;
+}
+
+/* Keep the complete places list fixed while the file panes move independently. */
+.app-window .app-sidebar,
+.app-window.sidebar-hidden .app-sidebar {
+  display: block;
+  box-sizing: border-box;
+  width: 205px;
+  padding: 9px 10px;
+  overflow: hidden;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease,
+    border-color 240ms ease;
+}
+.app-window.sidebar-hidden .app-sidebar {
+  width: 0;
+  padding-inline: 0;
+  border-color: transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 120ms ease,
+    border-color 240ms ease,
+    visibility 0s linear 240ms;
+}
+.app-window .sidebar-item {
+  min-height: 29px;
+  padding: 6px 9px;
+  font-size: 11px;
+}
+.app-window .sidebar-group + .sidebar-group {
+  margin-top: 7px;
+  padding-top: 7px;
+}
+.app-window .sidebar-group .sidebar-heading {
+  padding-bottom: 4px;
+  font-size: 8px;
+}
+.app-window .miller-parent {
+  width: 28%;
+}
+.app-window .file-pane {
+  width: 34%;
+}
+.app-window .pane-title {
+  height: 48px;
+  margin-bottom: 2px;
+  font-size: 11px;
+}
+.app-window .file-row {
+  min-height: 32px;
+  font-size: 11px;
+}
+.app-window .pane-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 29px;
+  padding-inline: 12px;
+  align-items: center;
+  border-top: 1px solid var(--line);
+}
+
+/* Native preview: file header, metadata strip, then edge-to-edge content. */
+.app-window .app-preview {
+  padding: 0;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--surface) 16%, var(--background));
+  overflow: hidden;
+}
+.app-window .preview-title.preview-meta {
+  height: 48px;
+  padding: 0 13px;
+  border-bottom: 1px solid var(--line);
+  letter-spacing: 0;
+}
+.app-window .preview-title strong,
+.app-window .preview-actions {
+  display: flex;
+  align-items: center;
+}
+.app-window .preview-title strong {
+  min-width: 0;
+  gap: 9px;
+  color: var(--soft);
+  font-size: 11px;
+  font-weight: 600;
+}
+.app-window .preview-title strong svg,
+.app-window .preview-actions svg {
+  color: var(--accent-ink);
+}
+.app-window .preview-actions {
+  gap: 4px;
+}
+.app-window .preview-actions button {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  place-items: center;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--accent-ink);
+}
+.app-window .preview-actions button:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.app-window .preview-properties {
+  display: grid;
+  grid-template-columns: 0.8fr 1.25fr 1fr;
+  min-height: 62px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--soft);
+  font-size: 9px;
+}
+.app-window .preview-properties > span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.app-window .preview-properties small {
+  color: var(--faint);
+  font-size: 7px;
+  letter-spacing: 0.5px;
+}
+.app-window .preview-image,
+.app-window .preview-code,
+.app-window .preview-markdown {
+  height: auto;
+  border: 0;
+  border-radius: 0;
+}
+.app-window .preview-image {
+  margin: 18px;
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+.app-window .preview-code {
+  padding: 10px 0;
+  overflow: hidden;
+  background: transparent;
+  color: var(--soft);
+  font-size: 10px;
+  line-height: 1.7;
+}
+.app-window .code-line {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  min-height: 20px;
+}
+.app-window .line-number {
+  padding-right: 10px;
+  border-right: 1px solid var(--line);
+  color: var(--faint);
+  text-align: right;
+  user-select: none;
+}
+.app-window .code-line code {
+  padding-left: 13px;
+  overflow: hidden;
+  color: inherit;
+  white-space: pre;
+  text-overflow: clip;
+}
+.app-window .code-line code.code-comment {
+  color: var(--faint);
+}
+
+@media (max-width: 850px) and (min-width: 621px) {
+  .app-window .app-content {
+    height: 470px;
+  }
+  .app-window .app-sidebar,
+  .app-window.sidebar-hidden .app-sidebar {
+    width: 155px;
+  }
+  .app-window.sidebar-hidden .app-sidebar {
+    width: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-window .app-content {
+    height: 450px;
+  }
+  .app-window .app-sidebar,
+  .app-window.sidebar-hidden .app-sidebar {
+    display: block;
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 15;
+    width: 0;
+    padding-inline: 0;
+    background: var(--background);
+    box-shadow: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .app-window.sidebar-mobile-open .app-sidebar {
+    width: 172px;
+    padding-inline: 10px;
+    box-shadow: 12px 0 25px #0007;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .app-window .sidebar-item {
+    min-height: 27px;
+    padding-block: 4px;
+    font-size: 9px;
+  }
+  .app-window .preview-title.preview-meta {
+    height: 38px;
+    padding-inline: 7px;
+  }
+  .app-window .preview-title strong {
+    gap: 5px;
+    font-size: 7px;
+  }
+  .app-window .preview-actions {
+    gap: 0;
+  }
+  .app-window .preview-actions button {
+    width: 24px;
+    height: 24px;
+  }
+  .app-window .preview-actions svg {
+    width: 10px;
+  }
+  .app-window .preview-properties {
+    min-height: 47px;
+    padding: 8px 7px;
+    font-size: 6px;
+  }
+  .app-window .preview-properties small {
+    font-size: 5px;
+  }
+  .app-window .preview-code {
+    padding-top: 6px;
+    font-size: 6px;
+  }
+  .app-window .code-line {
+    grid-template-columns: 24px minmax(0, 1fr);
+    min-height: 14px;
+  }
+  .app-window .line-number {
+    padding-right: 5px;
+  }
+  .app-window .code-line code {
+    padding-left: 6px;
+  }
+  .app-window .preview-image {
+    margin: 8px;
+  }
+}
+
+/* The search overlay is anchored to the illustrated app, not the page. */
+.app-window {
+  position: relative;
+}
+
+/* Let the preview replace file-list space and expose its native drag seam. */
+.app-window .browser-area:not(.preview-hidden) .file-pane {
+  flex: 1 1 auto;
+  width: auto;
+}
+.app-window .app-preview {
+  position: relative;
+  flex: 0 0 var(--preview-width, 31%);
+  width: var(--preview-width, 31%);
+  min-width: 0;
+}
+.app-window .preview-resize-handle {
+  position: absolute;
+  inset: 0 auto 0 -5px;
+  z-index: 8;
+  width: 10px;
+  cursor: col-resize;
+  touch-action: none;
+  outline: 0;
+}
+.app-window .preview-resize-handle::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 4px;
+  width: 1px;
+  background: color-mix(in srgb, var(--accent) 45%, var(--line));
+  transition:
+    width 120ms ease,
+    background 120ms ease;
+}
+.app-window .preview-resize-handle:is(:hover, :focus-visible)::after,
+.app-window .preview-resizing .preview-resize-handle::after {
+  width: 2px;
+  background: var(--accent);
+}
+.app-window .preview-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+.app-window .pane-notice {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 4;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--soft);
+  font-size: 8px;
+  box-shadow: 0 5px 18px #0005;
+}
+
+/* Match Strata's bottom shortcut legend. */
+.app-window .app-statusbar {
+  justify-content: space-between;
+  gap: 12px;
+  height: 32px;
+  padding-inline: 14px;
+  overflow: hidden;
+  color: var(--soft);
+  white-space: nowrap;
+}
+.app-window .app-statusbar > span,
+.app-window .app-statusbar > span:last-child {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  color: var(--soft);
+}
+.app-window .app-statusbar kbd {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+}
+
+@media (max-width: 850px) {
+  .app-window .app-statusbar > span:nth-child(2),
+  .app-window .app-statusbar > span:nth-child(3),
+  .app-window .app-statusbar > span:nth-child(7) {
+    display: none;
+  }
+}
+@media (max-width: 620px) {
+  .app-window .app-preview {
+    flex-basis: var(--preview-width, 48%);
+    width: var(--preview-width, 48%);
+  }
+  .app-window .preview-resize-handle {
+    display: none;
+  }
+  .app-window .app-statusbar {
+    justify-content: flex-start;
+    gap: 13px;
+    font-size: 6px;
+  }
+  .app-window .app-statusbar > span:nth-child(6),
+  .app-window .app-statusbar > span:nth-child(8) {
+    display: none;
+  }
+}
+
+/* Column headers are framed like the native Miller panes. */
+.app-window .miller-parent > .pane-title,
+.app-window .file-pane > .pane-title {
+  box-sizing: border-box;
+  margin: 0 -7px 3px;
+  padding-inline: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.app-window .miller-parent > .pane-title {
+  border-top: 3px solid var(--accent);
+}
+
+/* Native appearance popover. */
+.app-window .app-view-options > button[aria-expanded='true'] {
+  background: color-mix(in srgb, var(--accent) 22%, var(--background));
+  color: var(--accent-ink);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.app-window .app-view-popover {
+  top: 34px;
+  width: 230px;
+  padding: 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--surface) 88%, var(--background));
+}
+.app-window .view-section-label {
+  padding: 4px 7px;
+  font-size: 8px;
+}
+.app-window .app-view-popover button,
+.app-window .view-section label {
+  min-height: 30px;
+  padding: 6px 7px;
+  gap: 9px;
+  font-size: 10px;
+  border-radius: 3px;
+}
+.app-window .view-section {
+  margin-top: 5px;
+  padding-top: 5px;
+}
+.app-window .appearance-toggles label {
+  position: relative;
+}
+.app-window .appearance-toggles input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.app-window .appearance-toggles label > svg {
+  flex-shrink: 0;
+  color: var(--accent-ink);
+}
+.app-window .appearance-toggles label > span {
+  flex: 1;
+}
+.app-window .appearance-toggles label > kbd {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--faint);
+  font: inherit;
+}
+.app-window .appearance-toggles label:focus-within {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* Use stable native-style slots rather than distributing leftover space. */
+.app-window .app-statusbar {
+  display: grid;
+  grid-template-columns: 1.25fr 1.8fr 1.35fr 1fr 1.15fr 1.2fr 0.75fr 1fr;
+  justify-content: initial;
+  gap: 0;
+}
+
+@media (max-width: 620px) {
+  .app-window .miller-parent > .pane-title,
+  .app-window .file-pane > .pane-title {
+    margin-inline: -4px;
+    padding-inline: 7px;
+  }
+  .app-window .app-statusbar {
+    display: flex;
+  }
+}

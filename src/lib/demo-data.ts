@@ -6,7 +6,6 @@ export type DemoFile = { name: string; type: 'image' | 'code' | 'text'; size: st
 export const demoCollections: Record<string, DemoFile[]> = {
   assets: [
     { name: 'night-drive.png', type: 'image', size: '2.4 MB' },
-    { name: 'landscape.png', type: 'image', size: '1.8 MB' },
     { name: 'brand-guide.md', type: 'text', size: '4.2 KB' },
     { name: 'colors.json', type: 'code', size: '824 B' },
     { name: 'readme.md', type: 'text', size: '1.2 KB' },

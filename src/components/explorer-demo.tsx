@@ -1,20 +1,25 @@
 'use client';
 
-import { useState, useSyncExternalStore, type KeyboardEvent } from 'react';
+import {
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import Image from 'next/image';
 import {
   ArrowLeft,
   ArrowRight,
   ArrowUp,
-  Check,
   ChevronDown,
   FileCode2,
   FileImage,
   FileText,
   Folder,
-  PanelLeft,
+  Printer,
   Search,
-  ShieldCheck,
+  SquareArrowOutUpRight,
   X,
 } from 'lucide-react';
 import { Logo } from './logo';
@@ -63,6 +68,9 @@ export function ExplorerDemo() {
     () => false,
   );
   const [previewOpen, setPreviewOpen] = useState(true);
+  const [previewWidth, setPreviewWidth] = useState(31);
+  const [resizingPreview, setResizingPreview] = useState(false);
+  const browserArea = useRef<HTMLDivElement>(null);
   const [compact, setCompact] = useState(true);
   const [closed, setClosed] = useState(false);
   const [history, setHistory] = useState(['assets']);
@@ -108,6 +116,13 @@ export function ExplorerDemo() {
   function toggleSearch() {
     setSearching(!searching);
     setQuery('');
+  }
+  function resizePreview(event: PointerEvent<HTMLDivElement>) {
+    const bounds = browserArea.current?.getBoundingClientRect();
+    if (!bounds) return;
+    setPreviewWidth(
+      Math.max(24, Math.min(55, ((bounds.right - event.clientX) / bounds.width) * 100)),
+    );
   }
   function moveSelection(event: KeyboardEvent<HTMLDivElement>) {
     if (
@@ -164,7 +179,6 @@ export function ExplorerDemo() {
             }
             compact={compact}
             grouped={grouped}
-            previewOpen={previewOpen}
             onSidebar={() =>
               narrow ? setMobileSidebarOpen(!mobileSidebarOpen) : setSidebarOpen(!sidebarOpen)
             }
@@ -172,7 +186,6 @@ export function ExplorerDemo() {
             onClose={() => setClosed(true)}
             onCompact={setCompact}
             onGrouped={setGrouped}
-            onPreview={setPreviewOpen}
           />
           <div className="app-content">
             <DemoSidebar
@@ -181,7 +194,10 @@ export function ExplorerDemo() {
                 setMobileSidebarOpen(false);
               }}
             />
-            <div className={`browser-area mode-${mode} ${previewOpen ? '' : 'preview-hidden'}`}>
+            <div
+              ref={browserArea}
+              className={`browser-area mode-${mode} ${previewOpen ? '' : 'preview-hidden'} ${resizingPreview ? 'preview-resizing' : ''}`}
+            >
               {mode === 'columns' && (
                 <MillerParentPane
                   collections={collections}
@@ -304,10 +320,7 @@ export function ExplorerDemo() {
                                 alt=""
                                 width={140}
                                 height={100}
-                                style={{
-                                  objectPosition:
-                                    file.name === 'landscape.png' ? '50% 80%' : '50% 35%',
-                                }}
+                                style={{ objectPosition: '50% 35%' }}
                               />
                             ) : (
                               <FileIcon type={file.type} size={34} />
@@ -338,16 +351,87 @@ export function ExplorerDemo() {
                   ))}
                   {!displayed.length && <p className="demo-empty">No matching files.</p>}
                 </div>
-                <div className="pane-bottom">
-                  <span aria-live="polite">{notice || `${displayed.length} items`}</span>
-                  <span>{grouped ? 'Grouped by type' : '↑ ↓ to explore'}</span>
-                </div>
+                {notice && (
+                  <span className="pane-notice" aria-live="polite">
+                    {notice}
+                  </span>
+                )}
               </div>
               {previewOpen && (
-                <div className="app-preview" key={active.name}>
-                  <div className="preview-title">
-                    <span>QUICK LOOK</span>
-                    <ShieldCheck size={13} />
+                <div
+                  className="app-preview"
+                  key={active.name}
+                  style={{ '--preview-width': `${previewWidth}%` } as React.CSSProperties}
+                >
+                  <div
+                    className="preview-resize-handle"
+                    role="separator"
+                    aria-label="Resize preview pane"
+                    aria-orientation="vertical"
+                    aria-valuemin={24}
+                    aria-valuemax={55}
+                    aria-valuenow={Math.round(previewWidth)}
+                    tabIndex={0}
+                    onPointerDown={(event) => {
+                      event.currentTarget.setPointerCapture(event.pointerId);
+                      setResizingPreview(true);
+                      resizePreview(event);
+                    }}
+                    onPointerMove={(event) => {
+                      if (event.currentTarget.hasPointerCapture(event.pointerId))
+                        resizePreview(event);
+                    }}
+                    onPointerUp={(event) => {
+                      event.currentTarget.releasePointerCapture(event.pointerId);
+                      setResizingPreview(false);
+                    }}
+                    onPointerCancel={() => setResizingPreview(false)}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                      event.preventDefault();
+                      setPreviewWidth((width) =>
+                        Math.max(24, Math.min(55, width + (event.key === 'ArrowLeft' ? 2 : -2))),
+                      );
+                    }}
+                  />
+                  <div className="preview-title preview-meta">
+                    <strong>
+                      <FileIcon type={active.type} size={16} />
+                      {active.name}
+                    </strong>
+                    <div className="preview-actions" aria-label="Preview controls">
+                      <button aria-label="Open preview in a new window" title="Open externally">
+                        <SquareArrowOutUpRight size={14} />
+                      </button>
+                      <button aria-label="Print preview" title="Print">
+                        <Printer size={14} />
+                      </button>
+                      <button
+                        aria-label="Close preview"
+                        title="Close preview"
+                        onClick={() => setPreviewOpen(false)}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="preview-properties">
+                    <span>
+                      <small>SIZE</small>
+                      {active.size}
+                    </span>
+                    <span>
+                      <small>MODIFIED</small>
+                      Aug 14, 11:42
+                    </span>
+                    <span>
+                      <small>TYPE</small>
+                      {active.type === 'image'
+                        ? 'image/png'
+                        : active.type === 'code'
+                          ? 'text/plain'
+                          : 'text/markdown'}
+                    </span>
                   </div>
                   {active.type === 'image' ? (
                     <div className="preview-image">
@@ -361,24 +445,29 @@ export function ExplorerDemo() {
                       <span className="image-label">THE LONG WAY HOME</span>
                     </div>
                   ) : active.type === 'code' ? (
-                    <div className="preview-code">
-                      <span className="code-comment">{'// A little closer to the metal.'}</span>
-                      <br />
-                      <span className="code-purple">fn</span>{' '}
-                      <span className="code-blue">main</span>() {'{'}
-                      <br />
-                      {'  '}
-                      <span className="code-purple">let</span> app = Strata::new();
-                      <br />
-                      <br />
-                      {'  '}app
-                      <br />
-                      {'    '}.native(<span className="code-purple">true</span>)<br />
-                      {'    '}.theme(<span className="code-green">&quot;tokyo-night&quot;</span>)
-                      <br />
-                      {'    '}.navigate();
-                      <br />
-                      {'}'}
+                    <div className="preview-code" aria-label={`Text preview of ${active.name}`}>
+                      {[
+                        '// A little closer to the metal.',
+                        '',
+                        'use strata::App;',
+                        'use strata::theme::Theme;',
+                        '',
+                        'fn main() {',
+                        '    let app = App::new();',
+                        '',
+                        '    app',
+                        '        .native(true)',
+                        '        .theme(Theme::TokyoNight)',
+                        '        .navigate();',
+                        '}',
+                      ].map((line, index) => (
+                        <div className="code-line" key={index}>
+                          <span className="line-number">{index + 1}</span>
+                          <code className={line.startsWith('//') ? 'code-comment' : ''}>
+                            {line || ' '}
+                          </code>
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <div className="preview-markdown">
@@ -392,33 +481,28 @@ export function ExplorerDemo() {
                       <Logo />
                     </div>
                   )}
-                  <div className="preview-meta">
-                    <strong>{active.name}</strong>
-                    <span>
-                      {active.type === 'image'
-                        ? 'PNG image · 800 × 1000'
-                        : active.type === 'code'
-                          ? 'Source code · UTF-8'
-                          : 'Markdown document'}
-                      <b>{active.size}</b>
-                    </span>
-                  </div>
                 </div>
               )}
             </div>
           </div>
-          <div className="app-statusbar">
+          <div className="app-statusbar" aria-label="Keyboard shortcuts">
+            <span>↕ ↔ &nbsp; Navigate</span>
+            <span>← &nbsp; at first pane &nbsp; Sidebar</span>
+            <span>↑ &nbsp; at top &nbsp; Header</span>
             <span>
-              <PanelLeft size={12} /> Built for your desktop. Not a browser in disguise.
+              <kbd>Enter</kbd> Open
             </span>
             <span>
-              <ShieldCheck size={12} />{' '}
-              {!previewOpen
-                ? 'Space to preview'
-                : active.type === 'image'
-                  ? 'Sandboxed preview'
-                  : 'Bounded text preview'}
-              <Check size={11} />
+              <kbd>Space</kbd> Preview
+            </span>
+            <span>
+              <kbd>Ctrl+F</kbd> Filter
+            </span>
+            <span>
+              <kbd>Ctrl+C</kbd> Copy
+            </span>
+            <span>
+              <kbd>F1</kbd> Shortcuts
             </span>
           </div>
         </div>
