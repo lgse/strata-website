@@ -11,6 +11,9 @@ test('renders without browser errors and fits the viewport', async ({ page }) =>
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Navigateevery layer.');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'tokyo-night');
   await expect(page.locator('.theme-card')).toHaveCount(6);
+  const getStrata = page.locator('.nav-download');
+  await expect(getStrata).toHaveAttribute('href', '#download');
+  await expect(getStrata.locator('svg.lucide-download')).toHaveAttribute('aria-hidden', 'true');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.locator('#download').scrollIntoViewIfNeeded();
   await expect(page.getByRole('link', { name: 'Download for Linux' })).toHaveAttribute(

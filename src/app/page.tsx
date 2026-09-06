@@ -21,9 +21,9 @@ import {
   ShieldCheck,
   Terminal,
   Type,
-  Zap,
 } from 'lucide-react';
 import { Github } from '@/components/github-icon';
+import { Discord } from '@/components/discord-icon';
 import { Header } from '@/components/header';
 import { Logo } from '@/components/logo';
 import { ExplorerDemo } from '@/components/explorer-demo';
@@ -32,7 +32,10 @@ import { PreviewDemo } from '@/components/preview-demo';
 import { ThemeGallery } from '@/components/theme-gallery';
 import { InstallCommand } from '@/components/install-command';
 import { RevealObserver } from '@/components/motion';
+import { BenchmarkCard } from '@/components/benchmark-card';
+import { FeatureMatrix } from '@/components/feature-matrix';
 import { themes } from '@/lib/themes';
+import { discordInvite } from '@/lib/site-links';
 
 const repository = 'https://github.com/lgse/strata';
 const features = [
@@ -204,6 +207,10 @@ export default function Home() {
               <a className="button secondary" href={repository} target="_blank" rel="noreferrer">
                 <Github size={17} /> Explore the source <ArrowUpRight size={14} />
               </a>
+              <a className="button secondary" href={discordInvite} target="_blank" rel="noreferrer">
+                <Discord size={17} /> Join us on Discord
+                <ArrowUpRight size={14} aria-hidden="true" />
+              </a>
             </div>
             <InstallCommand variant="hero" />
             <div className="hero-footnote">
@@ -320,61 +327,8 @@ export default function Home() {
               </div>
             </article>
           </div>
-          <article className="performance-card" data-reveal>
-            <div className="performance-lines" aria-hidden="true">
-              {Array.from({ length: 12 }, (_, i) => (
-                <i key={i} style={{ '--line': i } as React.CSSProperties} />
-              ))}
-            </div>
-            <div className="performance-copy">
-              <span className="eyebrow">
-                <Zap size={14} /> NATIVE SPEED. NO SHORTCUTS.
-              </span>
-              <h3>
-                Big directories.
-                <br />
-                <span>Not a big deal.</span>
-              </h3>
-              <p>
-                Virtualized views. Background I/O. Bounded updates.
-                <br />
-                Strata does the heavy lifting without making
-                <br className="desktop-break" /> your interface carry the weight.
-              </p>
-              <a
-                href={`${repository}/blob/main/docs/performance-baseline.md`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Under the hood <ArrowUpRight size={14} />
-              </a>
-            </div>
-            <div className="performance-stats">
-              <div className="big-stat">
-                <span>
-                  100<span>k</span>
-                </span>
-                <p>entries in the documented test fixture</p>
-              </div>
-              <div className="performance-stat-row">
-                <div>
-                  <strong>
-                    &lt;4<span>ms</span>
-                  </strong>
-                  <span>UI insertion batches¹</span>
-                </div>
-                <div>
-                  <strong>0</strong>
-                  <span>Electron. Entirely native.</span>
-                </div>
-              </div>
-              <p className="benchmark-note">
-                ¹ Machine-specific engineering sample, not a universal benchmark.
-                <br />
-                Rust + GTK4. Lean by design, responsive by architecture.
-              </p>
-            </div>
-          </article>
+          <BenchmarkCard />
+          <FeatureMatrix />
         </section>
 
         <section className="themes-section section" id="themes" aria-labelledby="themes-title">
@@ -533,6 +487,10 @@ export default function Home() {
             <a href={repository} target="_blank" rel="noreferrer">
               Read the documentation <ArrowUpRight size={14} />
             </a>
+            <a className="faq-community" href={discordInvite} target="_blank" rel="noreferrer">
+              <Discord size={14} /> Ask on Discord
+              <ArrowUpRight size={13} aria-hidden="true" />
+            </a>
           </div>
           <div className="faq-list" data-reveal>
             {faqs.map(({ question, answer }) => (
@@ -559,6 +517,9 @@ export default function Home() {
           <div>
             <a href={repository} target="_blank" rel="noreferrer">
               GitHub <ArrowUpRight size={12} />
+            </a>
+            <a href={discordInvite} target="_blank" rel="noreferrer">
+              Discord <ArrowUpRight size={12} aria-hidden="true" />
             </a>
             <a href={`${repository}/releases`} target="_blank" rel="noreferrer">
               Releases <ArrowUpRight size={12} />

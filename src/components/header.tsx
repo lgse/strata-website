@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { ArrowUpRight, Download, Menu, X } from 'lucide-react';
 import { GitHubStars } from './github-stars';
 import { Logo } from './logo';
 import { ThemePicker } from './theme-picker';
+import { discordInvite } from '@/lib/site-links';
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -23,12 +24,15 @@ export function Header() {
           <a href="https://github.com/lgse/strata#installation" target="_blank" rel="noreferrer">
             Docs <ArrowUpRight size={11} />
           </a>
+          <a href={discordInvite} target="_blank" rel="noreferrer">
+            Discord <ArrowUpRight size={11} aria-hidden="true" />
+          </a>
         </nav>
         <div className="nav-actions">
           <ThemePicker />
           <GitHubStars />
           <a className="nav-download" href="#download">
-            Get Strata <ArrowUpRight size={14} />
+            Get Strata <Download size={14} aria-hidden="true" />
           </a>
           <button
             className="mobile-menu-button icon-button"
@@ -53,6 +57,9 @@ export function Header() {
             </a>
             <a href="https://github.com/lgse/strata#installation">
               Documentation <ArrowUpRight size={13} />
+            </a>
+            <a href={discordInvite} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
+              Discord <ArrowUpRight size={13} aria-hidden="true" />
             </a>
           </nav>
         )}
