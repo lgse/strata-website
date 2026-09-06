@@ -9,6 +9,13 @@ test('the permanent Discord invite is linked from the hero, navigation, FAQ and 
   expect(discordInvite).toBe('https://discord.gg/JAcuPEKDaE');
   const hero = page.locator('.hero-actions');
   await expect(hero.getByRole('link')).toHaveCount(3);
+  for (const name of ['Join us on Discord', 'Ask on Discord']) {
+    const icon = page.getByRole('link', { name, exact: true }).locator('svg[data-icon="discord"]');
+    await expect(icon).toBeVisible();
+    await expect(icon).toHaveAttribute('aria-hidden', 'true');
+    await expect(icon).toHaveAttribute('fill', 'currentColor');
+  }
+  await expect(page.locator('.lucide-message-circle')).toHaveCount(0);
   await expect(hero.getByRole('link', { name: 'Join us on Discord', exact: true })).toHaveAttribute(
     'href',
     discordInvite,

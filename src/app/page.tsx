@@ -11,7 +11,6 @@ import {
   GitBranch,
   Keyboard,
   Layers3,
-  MessageCircle,
   Monitor,
   MousePointer2,
   Network,
@@ -24,6 +23,7 @@ import {
   Type,
 } from 'lucide-react';
 import { Github } from '@/components/github-icon';
+import { Discord } from '@/components/discord-icon';
 import { Header } from '@/components/header';
 import { Logo } from '@/components/logo';
 import { ExplorerDemo } from '@/components/explorer-demo';
@@ -208,7 +208,7 @@ export default function Home() {
                 <Github size={17} /> Explore the source <ArrowUpRight size={14} />
               </a>
               <a className="button secondary" href={discordInvite} target="_blank" rel="noreferrer">
-                <MessageCircle size={17} aria-hidden="true" /> Join us on Discord
+                <Discord size={17} /> Join us on Discord
                 <ArrowUpRight size={14} aria-hidden="true" />
               </a>
             </div>
@@ -488,7 +488,7 @@ export default function Home() {
               Read the documentation <ArrowUpRight size={14} />
             </a>
             <a className="faq-community" href={discordInvite} target="_blank" rel="noreferrer">
-              <MessageCircle size={14} aria-hidden="true" /> Ask on Discord
+              <Discord size={14} /> Ask on Discord
               <ArrowUpRight size={13} aria-hidden="true" />
             </a>
           </div>
