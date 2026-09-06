@@ -555,6 +555,13 @@ test('responsive widths and reduced motion remain usable', async ({ page }) => {
   );
 });
 
+test('Discord interactions reject unsigned requests', async ({ request }) => {
+  const response = await request.post('/api/discord/interactions', {
+    data: { type: 1 },
+  });
+  expect(response.status()).toBe(401);
+});
+
 test('social image and robots are served, and fonts stay local', async ({ page, request }) => {
   const external: string[] = [];
   page.on('request', (req) => {
