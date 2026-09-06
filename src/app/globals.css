@@ -1703,39 +1703,6 @@ kbd {
   color: var(--soft);
 }
 
-.performance-card {
-  margin-top: 18px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 47px;
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  background: linear-gradient(115deg, var(--panel), var(--page) 70%);
-}
-.performance-copy,
-.performance-stats {
-  position: relative;
-  z-index: 1;
-}
-.performance-copy h3 {
-  font-size: 41px;
-  line-height: 1.13;
-  letter-spacing: -1.7px;
-  margin-top: 24px;
-}
-.performance-copy h3 > span {
-  color: var(--soft);
-}
-.performance-copy > p {
-  font-size: 12px;
-  color: var(--soft);
-  line-height: 1.9;
-  margin: 18px 0;
-}
-.performance-copy > a,
 .faq-heading > a {
   display: inline-flex;
   gap: 7px;
@@ -1743,82 +1710,9 @@ kbd {
   color: var(--accent-ink);
   font-size: 11px;
 }
-.performance-copy > a:hover,
 .faq-heading > a:hover {
   gap: 12px;
 }
-.performance-stats {
-  padding: 0 0 0 34px;
-}
-.big-stat > span {
-  font-size: 111px;
-  line-height: 1.1;
-  font-weight: 500;
-  letter-spacing: -7px;
-  background: linear-gradient(125deg, var(--ink), var(--accent));
-  color: transparent;
-  background-clip: text;
-}
-.big-stat > span > span {
-  font-size: 82px;
-}
-.big-stat p {
-  font-size: 11px;
-  color: var(--soft);
-  margin-top: 3px;
-}
-.performance-stat-row {
-  display: flex;
-  gap: 45px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-.performance-stat-row > div {
-  display: flex;
-  flex-direction: column;
-}
-.performance-stat-row strong {
-  font-size: 29px;
-  font-weight: 500;
-  letter-spacing: -1px;
-  line-height: 1.3;
-}
-.performance-stat-row strong > span {
-  font-size: 17px;
-  color: var(--soft);
-  margin-left: 3px;
-}
-.performance-stat-row > div > span {
-  font-size: 9px;
-  color: var(--faint);
-}
-.benchmark-note {
-  font-size: 8px;
-  color: var(--faint);
-  margin-top: 19px;
-  line-height: 1.85;
-}
-.performance-lines {
-  position: absolute;
-  left: 30%;
-  top: 20%;
-  right: -10%;
-  height: 400px;
-  transform: rotate(-23deg);
-  mask-image: linear-gradient(90deg, transparent, #0008);
-  opacity: 0.25;
-}
-.performance-lines > i {
-  position: absolute;
-  width: calc(420px + var(--line) * 50px);
-  height: calc(220px + var(--line) * 45px);
-  border: 1px solid var(--accent);
-  border-radius: 45%;
-  left: calc(var(--line) * -25px);
-  top: calc(var(--line) * -20px);
-}
-
 /* Palettes are real application data, not decorative presets. */
 .themes-section {
   position: relative;
@@ -2768,13 +2662,6 @@ body:has(dialog[open]) {
   .sandbox-permissions {
     font-size: 7px;
   }
-  .performance-card {
-    padding: 36px;
-    gap: 30px;
-  }
-  .performance-stats {
-    padding-left: 15px;
-  }
   .theme-gallery-bottom > span {
     font-size: 9px;
   }
@@ -2965,39 +2852,6 @@ body:has(dialog[open]) {
   .format-code pre {
     padding-left: 30px;
     font-size: 12px;
-  }
-  .performance-card {
-    padding: 30px;
-    gap: 20px;
-  }
-  .performance-copy h3 {
-    font-size: 33px;
-  }
-  .performance-copy > p {
-    font-size: 11px;
-  }
-  .performance-copy .eyebrow {
-    font-size: 8px;
-    letter-spacing: 1px;
-  }
-  .big-stat > span {
-    font-size: 86px;
-    letter-spacing: -6px;
-  }
-  .big-stat > span > span {
-    font-size: 65px;
-  }
-  .big-stat p {
-    font-size: 9px;
-  }
-  .performance-stat-row {
-    gap: 22px;
-  }
-  .performance-stat-row > div > span {
-    font-size: 8px;
-  }
-  .benchmark-note {
-    font-size: 7px;
   }
   .theme-gallery {
     gap: 10px;
@@ -3626,37 +3480,6 @@ body:has(dialog[open]) {
   }
   .waveform i {
     width: 3px;
-  }
-  .performance-card {
-    grid-template-columns: 1fr;
-    padding: 26px;
-    gap: 27px;
-  }
-  .performance-copy h3 {
-    font-size: 37px;
-    margin-top: 18px;
-  }
-  .performance-stats {
-    border-top: 1px solid var(--line);
-    padding: 24px 0 0;
-  }
-  .big-stat > span {
-    font-size: 93px;
-  }
-  .performance-stat-row {
-    gap: 50px;
-    margin-top: 19px;
-    padding-top: 17px;
-  }
-  .performance-stat-row > div > span {
-    font-size: 9px;
-  }
-  .benchmark-note {
-    font-size: 7px;
-  }
-  .performance-lines {
-    left: -50%;
-    top: 55%;
   }
   .theme-heading-description {
     display: flex;

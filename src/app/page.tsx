@@ -21,7 +21,6 @@ import {
   ShieldCheck,
   Terminal,
   Type,
-  Zap,
 } from 'lucide-react';
 import { Github } from '@/components/github-icon';
 import { Header } from '@/components/header';
@@ -32,6 +31,8 @@ import { PreviewDemo } from '@/components/preview-demo';
 import { ThemeGallery } from '@/components/theme-gallery';
 import { InstallCommand } from '@/components/install-command';
 import { RevealObserver } from '@/components/motion';
+import { BenchmarkCard } from '@/components/benchmark-card';
+import { FeatureMatrix } from '@/components/feature-matrix';
 import { themes } from '@/lib/themes';
 
 const repository = 'https://github.com/lgse/strata';
@@ -320,61 +321,8 @@ export default function Home() {
               </div>
             </article>
           </div>
-          <article className="performance-card" data-reveal>
-            <div className="performance-lines" aria-hidden="true">
-              {Array.from({ length: 12 }, (_, i) => (
-                <i key={i} style={{ '--line': i } as React.CSSProperties} />
-              ))}
-            </div>
-            <div className="performance-copy">
-              <span className="eyebrow">
-                <Zap size={14} /> NATIVE SPEED. NO SHORTCUTS.
-              </span>
-              <h3>
-                Big directories.
-                <br />
-                <span>Not a big deal.</span>
-              </h3>
-              <p>
-                Virtualized views. Background I/O. Bounded updates.
-                <br />
-                Strata does the heavy lifting without making
-                <br className="desktop-break" /> your interface carry the weight.
-              </p>
-              <a
-                href={`${repository}/blob/main/docs/performance-baseline.md`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Under the hood <ArrowUpRight size={14} />
-              </a>
-            </div>
-            <div className="performance-stats">
-              <div className="big-stat">
-                <span>
-                  100<span>k</span>
-                </span>
-                <p>entries in the documented test fixture</p>
-              </div>
-              <div className="performance-stat-row">
-                <div>
-                  <strong>
-                    &lt;4<span>ms</span>
-                  </strong>
-                  <span>UI insertion batches¹</span>
-                </div>
-                <div>
-                  <strong>0</strong>
-                  <span>Electron. Entirely native.</span>
-                </div>
-              </div>
-              <p className="benchmark-note">
-                ¹ Machine-specific engineering sample, not a universal benchmark.
-                <br />
-                Rust + GTK4. Lean by design, responsive by architecture.
-              </p>
-            </div>
-          </article>
+          <BenchmarkCard />
+          <FeatureMatrix />
         </section>
 
         <section className="themes-section section" id="themes" aria-labelledby="themes-title">

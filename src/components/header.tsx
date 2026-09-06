@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { ArrowUpRight, Download, Menu, X } from 'lucide-react';
 import { GitHubStars } from './github-stars';
 import { Logo } from './logo';
 import { ThemePicker } from './theme-picker';
@@ -28,7 +28,7 @@ export function Header() {
           <ThemePicker />
           <GitHubStars />
           <a className="nav-download" href="#download">
-            Get Strata <ArrowUpRight size={14} />
+            Get Strata <Download size={14} aria-hidden="true" />
           </a>
           <button
             className="mobile-menu-button icon-button"
