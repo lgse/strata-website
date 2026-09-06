@@ -993,7 +993,7 @@
 
 /* The list heading continues the pane header's rule; do not draw it twice. */
 .app-window .mode-column .file-pane > .pane-title {
-  margin-bottom: 0;
+  margin: 0;
 }
 .app-window .mode-column .table-heading {
   border-top: 0;

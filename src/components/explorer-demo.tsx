@@ -226,9 +226,7 @@ export function ExplorerDemo() {
                       <ArrowUp size={13} />
                     </button>
                   </div>
-                  <span className="pane-location">
-                    {collection} <small>{files.length}</small>
-                  </span>
+                  <span className="pane-location">{collection}</span>
                   <PaneActions
                     label={collection}
                     ascending={ascending}
