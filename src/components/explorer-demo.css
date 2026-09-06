@@ -991,6 +991,14 @@
   border-top: 3px solid var(--accent);
 }
 
+/* The list heading continues the pane header's rule; do not draw it twice. */
+.app-window .mode-column .file-pane > .pane-title {
+  margin-bottom: 0;
+}
+.app-window .mode-column .table-heading {
+  border-top: 0;
+}
+
 /* Native appearance popover. */
 .app-window .app-view-options > button[aria-expanded='true'] {
   background: color-mix(in srgb, var(--accent) 22%, var(--background));
