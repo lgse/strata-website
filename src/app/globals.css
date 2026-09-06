@@ -449,6 +449,7 @@ input {
 }
 .hero-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 11px;
@@ -2391,6 +2392,11 @@ body:has(dialog[open]) {
   line-height: 1.85;
   margin: 17px 0;
 }
+.faq-heading > .faq-community {
+  display: flex;
+  width: fit-content;
+  margin-top: 16px;
+}
 .faq-list {
   border-top: 1px solid var(--line);
 }
@@ -2453,6 +2459,7 @@ body:has(dialog[open]) {
 .footer-top > div {
   margin-left: auto;
   display: flex;
+  flex-wrap: wrap;
   gap: 25px;
 }
 .footer-top > div > a {
@@ -2596,9 +2603,12 @@ body:has(dialog[open]) {
   }
 }
 @media (max-width: 1100px) {
+  .nav-shell {
+    gap: 20px;
+  }
   .desktop-nav {
-    margin-left: 25px;
-    gap: 23px;
+    margin-left: 0;
+    gap: 18px;
   }
   .nav-actions {
     gap: 15px;

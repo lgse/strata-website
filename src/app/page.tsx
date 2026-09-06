@@ -11,6 +11,7 @@ import {
   GitBranch,
   Keyboard,
   Layers3,
+  MessageCircle,
   Monitor,
   MousePointer2,
   Network,
@@ -34,6 +35,7 @@ import { RevealObserver } from '@/components/motion';
 import { BenchmarkCard } from '@/components/benchmark-card';
 import { FeatureMatrix } from '@/components/feature-matrix';
 import { themes } from '@/lib/themes';
+import { discordInvite } from '@/lib/site-links';
 
 const repository = 'https://github.com/lgse/strata';
 const features = [
@@ -204,6 +206,10 @@ export default function Home() {
               </a>
               <a className="button secondary" href={repository} target="_blank" rel="noreferrer">
                 <Github size={17} /> Explore the source <ArrowUpRight size={14} />
+              </a>
+              <a className="button secondary" href={discordInvite} target="_blank" rel="noreferrer">
+                <MessageCircle size={17} aria-hidden="true" /> Join us on Discord
+                <ArrowUpRight size={14} aria-hidden="true" />
               </a>
             </div>
             <InstallCommand variant="hero" />
@@ -481,6 +487,10 @@ export default function Home() {
             <a href={repository} target="_blank" rel="noreferrer">
               Read the documentation <ArrowUpRight size={14} />
             </a>
+            <a className="faq-community" href={discordInvite} target="_blank" rel="noreferrer">
+              <MessageCircle size={14} aria-hidden="true" /> Ask on Discord
+              <ArrowUpRight size={13} aria-hidden="true" />
+            </a>
           </div>
           <div className="faq-list" data-reveal>
             {faqs.map(({ question, answer }) => (
@@ -507,6 +517,9 @@ export default function Home() {
           <div>
             <a href={repository} target="_blank" rel="noreferrer">
               GitHub <ArrowUpRight size={12} />
+            </a>
+            <a href={discordInvite} target="_blank" rel="noreferrer">
+              Discord <ArrowUpRight size={12} aria-hidden="true" />
             </a>
             <a href={`${repository}/releases`} target="_blank" rel="noreferrer">
               Releases <ArrowUpRight size={12} />
