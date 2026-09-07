@@ -181,9 +181,7 @@
   cursor: default;
   background: none;
 }
-.app-window .mode-columns .pane-navigation,
-.app-window .mode-grid .pane-navigation,
-.app-window .browser-area:not(.preview-hidden) .pane-navigation {
+.app-window .mode-columns .pane-navigation {
   display: none;
 }
 .app-window .pane-title button {
@@ -418,10 +416,90 @@
 .app-window.density-airy .demo-files {
   max-height: 310px;
 }
+/* Native icon view: free-standing thumbnails, not image cards. */
+.app-window .mode-grid .file-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.app-window :is(.mode-grid, .mode-column) .file-pane > .pane-title {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  height: auto;
+  min-height: 48px;
+  padding-block: 6px;
+}
+.app-window :is(.mode-grid, .mode-column) .pane-navigation {
+  flex-shrink: 0;
+}
+.app-window :is(.mode-grid, .mode-column) .pane-actions {
+  margin-left: auto;
+}
+.app-window .mode-grid .demo-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+  align-content: start;
+  gap: 26px 24px;
+  padding: 18px 12px;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+.app-window .mode-grid .demo-file-wrap {
+  min-width: 0;
+}
+.app-window .mode-grid .file-row {
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 126px;
+  padding: 8px 10px;
+  gap: 14px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 11px;
+}
+.app-window .mode-grid .grid-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  color: var(--accent-ink);
+}
+.app-window .mode-grid .grid-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.app-window .mode-grid .file-name {
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+@media (max-width: 620px) {
+  .app-window .mode-grid .demo-files {
+    grid-template-columns: repeat(auto-fill, minmax(min(105px, 100%), 1fr));
+    gap: 18px 10px;
+    padding: 12px 4px;
+  }
+  .app-window .mode-grid .file-row {
+    min-height: 114px;
+    padding-inline: 5px;
+    font-size: 9px;
+    gap: 10px;
+  }
+}
+
 .demo-closed {
   min-height: 480px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--panel);
   display: flex;
   flex-direction: column;
@@ -926,8 +1004,9 @@
   box-shadow: 0 5px 18px #0005;
 }
 
-/* Match Strata's bottom shortcut legend. */
+/* Equal gaps, with the outer shortcuts aligned to the bar's padding. */
 .app-window .app-statusbar {
+  display: flex;
   justify-content: space-between;
   gap: 12px;
   height: 32px;
@@ -969,8 +1048,6 @@
     display: none;
   }
   .app-window .app-statusbar {
-    justify-content: flex-start;
-    gap: 13px;
     font-size: 6px;
   }
   .app-window .app-statusbar > span:nth-child(6),
@@ -987,8 +1064,40 @@
   padding-inline: 14px;
   border-bottom: 1px solid var(--line);
 }
-.app-window .miller-parent > .pane-title {
-  border-top: 3px solid var(--accent);
+/* Only Miller columns use the active-column accent rule. */
+.app-window .mode-columns :is(.miller-parent, .file-pane) > .pane-title,
+.app-window .mode-columns .preview-title.preview-meta {
+  border-top: 3px solid transparent;
+}
+.app-window
+  :is(
+    .mode-columns[data-active-column='parent'] > .miller-parent,
+    .mode-columns[data-active-column='files'] > .file-pane,
+    .mode-columns[data-active-column='preview'] > .app-preview
+  )
+  > :is(.pane-title, .preview-title) {
+  border-top-color: var(--accent);
+}
+
+/* Touch keeps its controls available; pointer users reveal only the active column.
+   Opacity preserves the header layout and keyboard tab order. Open menus stay usable. */
+@media (hover: hover) and (pointer: fine) {
+  .app-window :is(.pane-actions, .preview-actions) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .app-window
+    :is(
+      [data-active-column='parent'] > .miller-parent,
+      [data-active-column='files'] > .file-pane,
+      [data-active-column='preview'] > .app-preview
+    )
+    > :is(.pane-title, .preview-title)
+    > :is(.pane-actions, .preview-actions),
+  .app-window .pane-actions:has(.pane-sort-options[open]) {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 /* The list heading continues the pane header's rule; do not draw it twice. */
@@ -1058,21 +1167,10 @@
   outline-offset: -1px;
 }
 
-/* Use stable native-style slots rather than distributing leftover space. */
-.app-window .app-statusbar {
-  display: grid;
-  grid-template-columns: 1.25fr 1.8fr 1.35fr 1fr 1.15fr 1.2fr 0.75fr 1fr;
-  justify-content: initial;
-  gap: 0;
-}
-
 @media (max-width: 620px) {
   .app-window .miller-parent > .pane-title,
   .app-window .file-pane > .pane-title {
     margin-inline: -4px;
     padding-inline: 7px;
-  }
-  .app-window .app-statusbar {
-    display: flex;
   }
 }

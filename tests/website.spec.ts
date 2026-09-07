@@ -29,9 +29,10 @@ test('all explorer modes, folder selection, file previews, filtering, sorting an
   await page.goto('/');
   await page.getByRole('button', { name: 'src', exact: true }).click();
   await expect(page.locator('.preview-meta strong')).toHaveText('main.rs');
+  await page.getByRole('button', { name: 'assets', exact: true }).click();
   await page.getByRole('button', { name: 'Grid', exact: true }).click();
   await expect(page.locator('.browser-area')).toHaveClass(/mode-grid/);
-  await page.getByRole('button', { name: 'assets', exact: true }).click();
+  await expect(page.locator('.folder-chips')).toHaveCount(0);
   await page.getByRole('button', { name: 'colors.json', exact: true }).click();
   await expect(page.locator('.preview-meta strong')).toHaveText('colors.json');
   await page.getByRole('button', { name: 'Column', exact: true }).click();
@@ -53,6 +54,33 @@ test('all explorer modes, folder selection, file previews, filtering, sorting an
   await expect(page.getByText('No matching files.')).toBeVisible();
   await page.getByRole('button', { name: 'Close file search' }).click();
   await expect(page.locator('.demo-files .file-row')).toHaveCount(4);
+});
+
+test('view toggle icon matches the selected mode from either set of controls', async ({ page }) => {
+  await page.goto('/');
+  const toggle = page.getByRole('button', { name: 'View options', exact: true });
+  const tabs = page.getByRole('group', { name: 'File view mode', exact: true });
+  await expect(toggle.locator('svg')).toHaveClass(/lucide-columns-3/);
+  for (const mode of [
+    { tab: 'Grid', icon: 'lucide-grid-2x2' },
+    { tab: 'Column', icon: 'lucide-rows-3' },
+    { tab: 'Miller column', icon: 'lucide-columns-3' },
+  ]) {
+    await tabs.getByRole('button', { name: mode.tab, exact: true }).click();
+    await expect(toggle.locator('svg')).toHaveClass(new RegExp(mode.icon));
+  }
+  for (const mode of [
+    { option: 'Icons', icon: 'lucide-grid-2x2' },
+    { option: 'List', icon: 'lucide-rows-3' },
+    { option: 'Columns', icon: 'lucide-columns-3' },
+  ]) {
+    await toggle.click();
+    await page
+      .getByRole('group', { name: 'View options', exact: true })
+      .getByRole('button', { name: mode.option, exact: true })
+      .click();
+    await expect(toggle.locator('svg')).toHaveClass(new RegExp(mode.icon));
+  }
 });
 
 test('native-style toolbar, navigation, settings and window controls work', async ({
@@ -293,16 +321,19 @@ test('Miller panes share native icons and keep their controls independent', asyn
       isMobile ? 2 : 4,
     );
   }
+  if (!isMobile) await parent.hover();
   await parent.getByRole('button', { name: 'Filter parent pane' }).click();
   await parent.getByRole('textbox', { name: 'Filter parent entries' }).fill('docs');
   await expect(parent.locator('.folder-row')).toHaveCount(1);
   await expect(files.locator('.demo-files .file-row')).toHaveCount(4);
+  if (!isMobile) await files.hover();
   await files.getByRole('button', { name: 'Filter demo folder' }).click();
   await files.getByRole('textbox', { name: 'Filter demo files' }).fill('night');
   await expect(files.locator('.demo-files .file-row')).toHaveCount(1);
   await parent.getByRole('button', { name: 'Close parent filter' }).click();
   await expect(parent.locator('.folder-row')).toHaveCount(3);
   await expect(files.locator('.demo-files .file-row')).toHaveCount(1);
+  if (!isMobile) await parent.hover();
   await parent.locator('.pane-sort-options > summary').click();
   await parent.getByRole('button', { name: 'Name: A to Z' }).click();
   await parent.getByRole('checkbox', { name: 'Group parent pane by type' }).check();

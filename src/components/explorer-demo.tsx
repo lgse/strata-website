@@ -30,8 +30,9 @@ import { DemoSearch } from './demo-search';
 import {
   demoCollections as collections,
   demoModes as modes,
+  demoRootEntries,
   type DemoMode as Mode,
-  type DemoFile,
+  type DemoEntry,
 } from '@/lib/demo-data';
 import './explorer-demo.css';
 
@@ -41,8 +42,14 @@ function subscribeViewport(callback: () => void) {
   return () => media.removeEventListener('change', callback);
 }
 
-function FileIcon({ type, size = 15 }: { type: DemoFile['type']; size?: number }) {
-  return type === 'image' ? (
+function folderEntries(name: string): DemoEntry[] {
+  return name === 'strata' ? demoRootEntries : collections[name];
+}
+
+function FileIcon({ type, size = 15 }: { type: DemoEntry['type']; size?: number }) {
+  return type === 'folder' ? (
+    <Folder size={size} />
+  ) : type === 'image' ? (
     <FileImage size={size} />
   ) : type === 'code' ? (
     <FileCode2 size={size} />
@@ -53,6 +60,7 @@ function FileIcon({ type, size = 15 }: { type: DemoFile['type']; size?: number }
 
 export function ExplorerDemo() {
   const [mode, setMode] = useState<Mode>('columns');
+  const [activeColumn, setActiveColumn] = useState('parent');
   const [collection, setCollection] = useState('assets');
   const [selected, setSelected] = useState('night-drive.png');
   const [query, setQuery] = useState('');
@@ -76,9 +84,8 @@ export function ExplorerDemo() {
   const [history, setHistory] = useState(['assets']);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [notice, setNotice] = useState('');
-  const files = collections[collection].filter((file) =>
-    file.name.toLowerCase().includes(query.toLowerCase()),
-  );
+  const entries = folderEntries(collection);
+  const files = entries.filter((file) => file.name.toLowerCase().includes(query.toLowerCase()));
   const displayed = [...files].sort((a, b) =>
     grouped
       ? a.type.localeCompare(b.type) ||
@@ -87,11 +94,23 @@ export function ExplorerDemo() {
         ? a.name.localeCompare(b.name) * (ascending ? 1 : -1)
         : 0,
   );
-  const active =
-    collections[collection].find((file) => file.name === selected) ?? collections[collection][0];
+  const active = entries.find((file) => file.name === selected) ?? entries[0];
+  const previewVisible = previewOpen && active.type !== 'folder';
+  const parentVisible = mode === 'columns' && collection !== 'strata';
+  const visibleActiveColumn =
+    (activeColumn === 'parent' && !parentVisible) || (activeColumn === 'preview' && !previewVisible)
+      ? 'files'
+      : activeColumn;
+
+  function activateColumn(target: EventTarget) {
+    if (!(target instanceof Element)) return;
+    const column = target.closest<HTMLElement>('[data-demo-column]')?.dataset.demoColumn;
+    if (column) setActiveColumn(column);
+  }
+
   function selectFolder(name: string) {
     setCollection(name);
-    setSelected(collections[name][0].name);
+    setSelected(folderEntries(name)[0].name);
     setQuery('');
     setNotice('');
   }
@@ -102,6 +121,12 @@ export function ExplorerDemo() {
     }
     selectFolder(name);
   }
+  function navigateUp() {
+    if (collection === 'strata') return;
+    openFolder('strata');
+    setSelected(collection);
+    setPreviewOpen(false);
+  }
   function navigateHistory(delta: number) {
     const next = historyIndex + delta;
     if (next < 0 || next >= history.length) return;
@@ -110,7 +135,7 @@ export function ExplorerDemo() {
   }
   function changeMode(next: Mode) {
     setMode(next);
-    setPreviewOpen(next !== 'column');
+    setPreviewOpen(next === 'columns');
     setClosed(false);
   }
   function toggleSearch() {
@@ -196,16 +221,19 @@ export function ExplorerDemo() {
             />
             <div
               ref={browserArea}
-              className={`browser-area mode-${mode} ${previewOpen ? '' : 'preview-hidden'} ${resizingPreview ? 'preview-resizing' : ''}`}
+              data-active-column={visibleActiveColumn}
+              onPointerOver={(event) => activateColumn(event.target)}
+              onFocus={(event) => activateColumn(event.target)}
+              className={`browser-area mode-${mode} ${previewVisible ? '' : 'preview-hidden'} ${resizingPreview ? 'preview-resizing' : ''}`}
             >
-              {mode === 'columns' && (
+              {parentVisible && (
                 <MillerParentPane
                   collections={collections}
                   collection={collection}
                   onFolder={openFolder}
                 />
               )}
-              <div className="file-pane">
+              <div className="file-pane" data-demo-column="files">
                 <div className="pane-title">
                   <div className="pane-navigation">
                     <button
@@ -222,7 +250,12 @@ export function ExplorerDemo() {
                     >
                       <ArrowRight size={13} />
                     </button>
-                    <button aria-label="Show parent columns" onClick={() => changeMode('columns')}>
+                    <button
+                      aria-label="Navigate up"
+                      title="Navigate up"
+                      disabled={collection === 'strata'}
+                      onClick={navigateUp}
+                    >
                       <ArrowUp size={13} />
                     </button>
                   </div>
@@ -265,20 +298,6 @@ export function ExplorerDemo() {
                     </button>
                   </label>
                 )}
-                {mode === 'grid' && (
-                  <div className="folder-chips">
-                    {Object.keys(collections).map((name) => (
-                      <button
-                        key={name}
-                        aria-pressed={name === collection}
-                        onClick={() => openFolder(name)}
-                      >
-                        <Folder size={13} />
-                        {name}
-                      </button>
-                    ))}
-                  </div>
-                )}
                 {mode === 'column' && (
                   <div className="table-heading">
                     <span>
@@ -295,33 +314,33 @@ export function ExplorerDemo() {
                     <div key={file.name} className="demo-file-wrap">
                       {grouped && (index === 0 || displayed[index - 1].type !== file.type) && (
                         <div className="file-group-heading">
-                          {file.type === 'image'
-                            ? 'Images'
-                            : file.type === 'code'
-                              ? 'Source code'
-                              : 'Documents'}
+                          {file.type === 'folder'
+                            ? 'Folders'
+                            : file.type === 'image'
+                              ? 'Images'
+                              : file.type === 'code'
+                                ? 'Source code'
+                                : 'Documents'}
                         </div>
                       )}
                       <button
                         className={`file-row ${active.name === file.name ? 'selected' : ''}`}
                         aria-pressed={active.name === file.name}
                         onClick={() => {
-                          setSelected(file.name);
-                          setPreviewOpen(true);
+                          if (file.type === 'folder') {
+                            openFolder(file.name);
+                          } else {
+                            setSelected(file.name);
+                            setPreviewOpen(true);
+                          }
                         }}
                       >
                         {mode === 'grid' ? (
                           <span className={`grid-thumbnail thumbnail-${file.type}`}>
                             {file.type === 'image' ? (
-                              <Image
-                                src="/art/night-drive.svg"
-                                alt=""
-                                width={140}
-                                height={100}
-                                style={{ objectPosition: '50% 35%' }}
-                              />
+                              <Image src="/art/night-drive.svg" alt="" width={64} height={64} />
                             ) : (
-                              <FileIcon type={file.type} size={34} />
+                              <FileIcon type={file.type} size={56} />
                             )}
                           </span>
                         ) : (
@@ -330,14 +349,18 @@ export function ExplorerDemo() {
                         <span className="file-name">{file.name}</span>
                         {mode === 'column' && (
                           <>
-                            <span className="file-permissions">-rw-r--r--</span>
+                            <span className="file-permissions">
+                              {file.type === 'folder' ? 'drwxr-xr-x' : '-rw-r--r--'}
+                            </span>
                             <span className="file-size">{file.size}</span>
                             <span className="file-type">
-                              {file.type === 'image'
-                                ? 'PNG image'
-                                : file.type === 'code'
-                                  ? 'Source code'
-                                  : 'Markdown'}
+                              {file.type === 'folder'
+                                ? 'Folder'
+                                : file.type === 'image'
+                                  ? 'PNG image'
+                                  : file.type === 'code'
+                                    ? 'Source code'
+                                    : 'Markdown'}
                             </span>
                             <span className="file-modified">
                               {file.name === 'night-drive.png' ? '2m ago' : 'Yesterday'}
@@ -355,9 +378,10 @@ export function ExplorerDemo() {
                   </span>
                 )}
               </div>
-              {previewOpen && (
+              {previewVisible && (
                 <div
                   className="app-preview"
+                  data-demo-column="preview"
                   key={active.name}
                   style={{ '--preview-width': `${previewWidth}%` } as React.CSSProperties}
                 >

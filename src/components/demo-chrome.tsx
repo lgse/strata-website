@@ -13,7 +13,6 @@ import {
   HardDrive,
   Home,
   Image as ImageIcon,
-  List,
   ListChecks,
   Network,
   PanelLeft,
@@ -39,6 +38,7 @@ interface ToolbarProps {
 }
 
 export function DemoToolbar(props: ToolbarProps) {
+  const ViewIcon = (demoModes.find(({ id }) => id === props.mode) ?? demoModes[0]).icon;
   const [viewOpen, setViewOpen] = useState(false);
   const [hiddenFiles, setHiddenFiles] = useState(false);
   const view = useRef<HTMLDivElement>(null);
@@ -93,7 +93,7 @@ export function DemoToolbar(props: ToolbarProps) {
             aria-controls="demo-view-options"
             onClick={() => setViewOpen(!viewOpen)}
           >
-            <List size={18} />
+            <ViewIcon size={18} />
           </button>
           {viewOpen && (
             <div

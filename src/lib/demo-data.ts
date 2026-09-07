@@ -2,6 +2,7 @@ import { Columns3, Grid2X2, Rows3 } from 'lucide-react';
 
 export type DemoMode = 'columns' | 'grid' | 'column';
 export type DemoFile = { name: string; type: 'image' | 'code' | 'text'; size: string };
+export type DemoEntry = DemoFile | { name: string; type: 'folder'; size: string };
 
 export const demoCollections: Record<string, DemoFile[]> = {
   assets: [
@@ -20,6 +21,17 @@ export const demoCollections: Record<string, DemoFile[]> = {
     { name: 'architecture.md', type: 'text', size: '3.8 KB' },
   ],
 };
+
+export const demoRootEntries: DemoEntry[] = [
+  ...Object.entries(demoCollections).map(([name, files]) => ({
+    name,
+    type: 'folder' as const,
+    size: `${files.length} items`,
+  })),
+  { name: 'Cargo.toml', type: 'code', size: '824 B' },
+  { name: 'README.md', type: 'text', size: '1.2 KB' },
+  { name: 'LICENSE', type: 'text', size: '1.1 KB' },
+];
 
 export const demoModes = [
   {

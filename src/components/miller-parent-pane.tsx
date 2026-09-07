@@ -40,7 +40,7 @@ export function MillerParentPane({ collections, collection, onFolder }: ParentPa
     );
 
   return (
-    <div className="miller-parent">
+    <div className="miller-parent" data-demo-column="parent">
       <div className="pane-title">
         <span className="pane-location">strata</span>
         <PaneActions
