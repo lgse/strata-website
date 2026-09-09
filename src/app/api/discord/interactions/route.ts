@@ -1,9 +1,12 @@
 import { createPublicKey, verify } from 'node:crypto';
+import { after } from 'next/server';
+import { upcomingChangelog } from '@/lib/discord-changelog';
+import { workCommand } from '@/lib/discord-work';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60;
 
-const repository = 'lgse/strata';
-const githubApi = `https://api.github.com/repos/${repository}`;
+const githubApi = 'https://api.github.com/repos/lgse/strata';
 const discordEphemeral = 1 << 6;
 const publicKeyPrefix = Buffer.from('302a300506032b6570032100', 'hex');
 
@@ -13,16 +16,6 @@ type Release = {
   prerelease: boolean;
   draft: boolean;
   published_at: string | null;
-};
-
-type Comparison = {
-  commits: Array<{
-    sha: string;
-    html_url: string;
-    commit: { message: string };
-  }>;
-  total_commits: number;
-  permalink_url: string;
 };
 
 type Repository = {
@@ -53,13 +46,15 @@ type WorkflowRuns = {
 
 type Interaction = {
   type: number;
+  application_id?: string;
+  token?: string;
+  member?: { user?: { id?: string } };
+  user?: { id?: string };
   data?: {
     name?: string;
     options?: Array<{ name: string; value: string }>;
   };
 };
-
-type ChangelogChannel = 'stable' | 'rc' | 'preview';
 
 function githubHeaders(): HeadersInit {
   const headers: Record<string, string> = {
@@ -70,6 +65,15 @@ function githubHeaders(): HeadersInit {
   const token = process.env.GITHUB_API_TOKEN || process.env.GITHUB_CHANGELOG_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
+}
+
+async function githubJson<T>(path: string, revalidate = 60): Promise<T> {
+  const result = await fetch(`${githubApi}${path}`, {
+    headers: githubHeaders(),
+    next: { revalidate },
+  });
+  if (!result.ok) throw new Error(`GitHub request failed (${result.status}).`);
+  return result.json() as Promise<T>;
 }
 
 function verifyDiscordRequest(body: string, signature: string | null, timestamp: string | null) {
@@ -85,60 +89,6 @@ function verifyDiscordRequest(body: string, signature: string | null, timestamp:
   } catch {
     return false;
   }
-}
-
-function releaseTime(release: Release) {
-  return release.published_at ? Date.parse(release.published_at) : 0;
-}
-
-function baselineFor(channel: ChangelogChannel, releases: Release[]) {
-  const published = releases.filter((release) => !release.draft && release.published_at);
-  const stable = published.find((release) => !release.prerelease);
-  if (!stable) throw new Error('No stable Strata release is available.');
-  if (channel === 'stable') return stable;
-
-  const prerelease = published.find((release) => {
-    if (!release.prerelease) return false;
-    return channel === 'rc' ? /-rc(?:\.|$)/i.test(release.tag_name) : true;
-  });
-  return prerelease && releaseTime(prerelease) > releaseTime(stable) ? prerelease : stable;
-}
-
-async function githubJson<T>(path: string, revalidate = 60): Promise<T> {
-  const result = await fetch(`${githubApi}${path}`, {
-    headers: githubHeaders(),
-    next: { revalidate },
-  });
-  if (!result.ok) throw new Error(`GitHub request failed (${result.status}).`);
-  return result.json() as Promise<T>;
-}
-
-async function upcomingChangelog(channel: ChangelogChannel) {
-  const releasesResponse = await fetch(`${githubApi}/releases?per_page=100`, {
-    headers: githubHeaders(),
-    next: { revalidate: 60 },
-  });
-  if (!releasesResponse.ok) throw new Error('Could not load Strata releases.');
-  const releases = (await releasesResponse.json()) as Release[];
-  const baseline = baselineFor(channel, releases);
-
-  const comparisonResponse = await fetch(
-    `${githubApi}/compare/${encodeURIComponent(baseline.tag_name)}...main`,
-    { headers: githubHeaders(), next: { revalidate: 60 } },
-  );
-  if (!comparisonResponse.ok) throw new Error('Could not generate the upcoming changelog.');
-  const comparison = (await comparisonResponse.json()) as Comparison;
-  const label = channel === 'rc' ? 'RC' : channel[0].toUpperCase() + channel.slice(1);
-  const heading = `**Upcoming ${label} changelog**\nSince [${baseline.tag_name}](${baseline.html_url})\n\n`;
-  const footer = `\n\n[View the complete comparison](${comparison.permalink_url})`;
-  const available = 2_000 - heading.length - footer.length;
-  const changes = comparison.commits.map((commit) => {
-    const title = commit.commit.message.split('\n', 1)[0];
-    return `- [${title}](${commit.html_url})`;
-  });
-  let body = changes.join('\n') || 'No changes have landed yet.';
-  if (body.length > available) body = `${body.slice(0, available - 3).trimEnd()}...`;
-  return heading + body + footer;
 }
 
 function labelCount(issues: Issue[], ...labels: string[]) {
@@ -227,16 +177,77 @@ export async function POST(request: Request) {
   if (interaction.type === 1) return Response.json({ type: 1 });
   if (interaction.type !== 2) return response('Unknown command.');
 
+  if (interaction.data?.name === 'changelog') {
+    const applicationId = interaction.application_id;
+    const token = interaction.token;
+    if (!applicationId || !token) return response('Missing Discord interaction details.');
+    const requested = interaction.data.options?.find((option) => option.name === 'channel')?.value;
+    const channel = requested === 'rc' || requested === 'preview' ? requested : 'stable';
+    after(async () => {
+      let content: string;
+      try {
+        content = await upcomingChangelog(channel);
+      } catch {
+        console.error('Discord changelog command failed');
+        content = 'Repository information is temporarily unavailable. Please try again.';
+      }
+      try {
+        const result = await fetch(
+          `https://discord.com/api/v10/webhooks/${encodeURIComponent(applicationId)}/${encodeURIComponent(token)}/messages/@original`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content, allowed_mentions: { parse: [] } }),
+            signal: AbortSignal.timeout(8_000),
+          },
+        );
+        if (!result.ok) console.error('Discord deferred reply failed', result.status);
+      } catch {
+        console.error('Discord deferred reply failed');
+      }
+    });
+    return Response.json({ type: 5, data: { flags: discordEphemeral } });
+  }
+
+  if (['my-work', 'github-link', 'github-unlink'].includes(interaction.data?.name || '')) {
+    const userId = interaction.member?.user?.id || interaction.user?.id;
+    const applicationId = interaction.application_id;
+    const token = interaction.token;
+    if (!userId || !applicationId || !token)
+      return response('Missing Discord user or interaction details.');
+    const name = interaction.data!.name!;
+    const username = interaction.data?.options?.find((option) => option.name === 'username')?.value;
+    // Acknowledge immediately: GitHub/storage requests can exceed Discord's three-second deadline.
+    after(async () => {
+      let content: string;
+      try {
+        content = await workCommand(name, userId, username);
+      } catch {
+        // Do not log tokens, account mappings, or webhook URLs.
+        console.error(`Discord ${name} command failed`);
+        content =
+          'GitHub or account storage is temporarily unavailable. Check the username if linking, or try again later.';
+      }
+      try {
+        const result = await fetch(
+          `https://discord.com/api/v10/webhooks/${encodeURIComponent(applicationId)}/${encodeURIComponent(token)}/messages/@original`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content, allowed_mentions: { parse: [] } }),
+            signal: AbortSignal.timeout(8_000),
+          },
+        );
+        if (!result.ok) console.error('Discord deferred reply failed', result.status);
+      } catch {
+        console.error('Discord deferred reply failed');
+      }
+    });
+    return Response.json({ type: 5, data: { flags: discordEphemeral } });
+  }
+
   try {
     if (interaction.data?.name === 'repo-health') return response(await repositoryHealth());
-    if (interaction.data?.name === 'changelog') {
-      const requested = interaction.data.options?.find(
-        (option) => option.name === 'channel',
-      )?.value;
-      const channel: ChangelogChannel =
-        requested === 'rc' || requested === 'preview' ? requested : 'stable';
-      return response(await upcomingChangelog(channel));
-    }
     return response('Unknown command.');
   } catch (error) {
     console.error(`Discord ${interaction.data?.name || 'unknown'} command failed`, error);
