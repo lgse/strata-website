@@ -1,7 +1,6 @@
 import { createPublicKey, verify } from 'node:crypto';
 import { after } from 'next/server';
 import { upcomingChangelog } from '@/lib/discord-changelog';
-import { workCommand } from '@/lib/discord-work';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -48,8 +47,6 @@ type Interaction = {
   type: number;
   application_id?: string;
   token?: string;
-  member?: { user?: { id?: string } };
-  user?: { id?: string };
   data?: {
     name?: string;
     options?: Array<{ name: string; value: string }>;
@@ -190,43 +187,6 @@ export async function POST(request: Request) {
       } catch {
         console.error('Discord changelog command failed');
         content = 'Repository information is temporarily unavailable. Please try again.';
-      }
-      try {
-        const result = await fetch(
-          `https://discord.com/api/v10/webhooks/${encodeURIComponent(applicationId)}/${encodeURIComponent(token)}/messages/@original`,
-          {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content, allowed_mentions: { parse: [] } }),
-            signal: AbortSignal.timeout(8_000),
-          },
-        );
-        if (!result.ok) console.error('Discord deferred reply failed', result.status);
-      } catch {
-        console.error('Discord deferred reply failed');
-      }
-    });
-    return Response.json({ type: 5, data: { flags: discordEphemeral } });
-  }
-
-  if (['my-work', 'github-link', 'github-unlink'].includes(interaction.data?.name || '')) {
-    const userId = interaction.member?.user?.id || interaction.user?.id;
-    const applicationId = interaction.application_id;
-    const token = interaction.token;
-    if (!userId || !applicationId || !token)
-      return response('Missing Discord user or interaction details.');
-    const name = interaction.data!.name!;
-    const username = interaction.data?.options?.find((option) => option.name === 'username')?.value;
-    // Acknowledge immediately: GitHub/storage requests can exceed Discord's three-second deadline.
-    after(async () => {
-      let content: string;
-      try {
-        content = await workCommand(name, userId, username);
-      } catch {
-        // Do not log tokens, account mappings, or webhook URLs.
-        console.error(`Discord ${name} command failed`);
-        content =
-          'GitHub or account storage is temporarily unavailable. Check the username if linking, or try again later.';
       }
       try {
         const result = await fetch(
