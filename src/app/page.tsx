@@ -287,8 +287,8 @@ export default function Home() {
               </div>
               <h3>Thought. Keystroke. There.</h3>
               <p>
-                Vim-style movement. Instant fuzzy search. Find files as the tree indexes, and keep
-                your hands where your ideas happen.
+                Arrow keys and hjkl navigation. Instant fuzzy search. Find files as the tree
+                indexes, and keep your hands where your ideas happen.
               </p>
               <KeyboardDemo />
               <div className="key-strip">
