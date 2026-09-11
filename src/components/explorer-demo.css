@@ -149,7 +149,7 @@
 .app-window .sidebar-item > svg {
   color: var(--accent-ink);
 }
-.app-window button.sidebar-item:hover {
+.app-window .sidebar-item:hover {
   background: color-mix(in srgb, var(--accent) 9%, transparent);
   color: var(--ink);
 }

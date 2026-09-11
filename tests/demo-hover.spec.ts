@@ -1,5 +1,30 @@
 import { expect, test } from '@playwright/test';
 
+test('Trash and Network use the same hover styling as other sidebar items', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, 'Pointer hover styling');
+  await page.goto('/');
+  const app = page.locator('.app-window');
+  const documents = app.locator('.sidebar-item').filter({ hasText: /^Documents$/ });
+  await documents.hover();
+  const hoveredBackground = await documents.evaluate(
+    (node) => getComputedStyle(node).backgroundColor,
+  );
+  const hoveredColor = await documents.evaluate((node) => getComputedStyle(node).color);
+  for (const label of ['Trash', 'Network']) {
+    const item = app.locator('.sidebar-item').filter({ hasText: new RegExp(`^${label}$`) });
+    const restingBackground = await item.evaluate((node) => getComputedStyle(node).backgroundColor);
+    await item.hover();
+    await expect(item).toHaveCSS('background-color', hoveredBackground);
+    await expect(item).toHaveCSS('color', hoveredColor);
+    expect(hoveredBackground).not.toBe(restingBackground);
+    await app.locator('.app-toolbar').hover();
+    await expect(item).toHaveCSS('background-color', restingBackground);
+  }
+});
+
 test('demo actions and accent follow the hovered column without shifting the layout', async ({
   page,
   isMobile,
