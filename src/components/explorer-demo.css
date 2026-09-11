@@ -1074,8 +1074,7 @@
 .app-window
   :is(
     .mode-columns[data-active-column='parent'] > .miller-parent,
-    .mode-columns[data-active-column='files'] > .file-pane,
-    .mode-columns[data-active-column='preview'] > .app-preview
+    .mode-columns[data-active-column='files'] > .file-pane
   )
   > :is(.pane-title, .preview-title) {
   border-top-color: var(--accent);
@@ -1084,18 +1083,14 @@
 /* Touch keeps its controls available; pointer users reveal only the active column.
    Opacity preserves the header layout and keyboard tab order. Open menus stay usable. */
 @media (hover: hover) and (pointer: fine) {
-  .app-window :is(.pane-actions, .preview-actions) {
+  .app-window .pane-actions {
     opacity: 0;
     pointer-events: none;
   }
   .app-window
-    :is(
-      [data-active-column='parent'] > .miller-parent,
-      [data-active-column='files'] > .file-pane,
-      [data-active-column='preview'] > .app-preview
-    )
-    > :is(.pane-title, .preview-title)
-    > :is(.pane-actions, .preview-actions),
+    :is([data-active-column='parent'] > .miller-parent, [data-active-column='files'] > .file-pane)
+    > .pane-title
+    > .pane-actions,
   .app-window .pane-actions:has(.pane-sort-options[open]) {
     opacity: 1;
     pointer-events: auto;

@@ -20,15 +20,16 @@ test('demo actions and accent follow the hovered column without shifting the lay
   const positions = await Promise.all(headers.map((header) => header.boundingBox()));
   await expect(headers[0]).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
   for (const [index, controls] of actions.entries()) {
-    await expect(controls).toHaveCSS('opacity', index === 0 ? '1' : '0');
+    await expect(controls).toHaveCSS('opacity', index === 0 || index === 2 ? '1' : '0');
   }
 
   for (const [index, pane] of panes.entries()) {
     // Hover the body, not just the header.
     await pane.hover({ position: { x: 20, y: 250 } });
+    const active = index === 2 ? 1 : index;
     for (const [other, controls] of actions.entries()) {
-      await expect(controls).toHaveCSS('opacity', other === index ? '1' : '0');
-      if (other === index) {
+      await expect(controls).toHaveCSS('opacity', other === active || other === 2 ? '1' : '0');
+      if (other === active) {
         await expect(headers[other]).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
       } else {
         await expect(headers[other]).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
@@ -36,9 +37,15 @@ test('demo actions and accent follow the hovered column without shifting the lay
       expect(await headers[other].boundingBox()).toEqual(positions[other]);
     }
     await app.locator('.app-toolbar').hover();
-    await expect(headers[index]).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+    await expect(headers[active]).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
     await expect(actions[index]).toHaveCSS('opacity', '1');
   }
+
+  await page.getByRole('button', { name: 'Close preview', exact: true }).focus();
+  await expect(actions[2]).toHaveCSS('opacity', '1');
+  await expect(actions[2]).toHaveCSS('pointer-events', 'auto');
+  await expect(headers[2]).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+  await expect(headers[1]).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
 
   // Keyboard users can tab into controls even when the pointer is elsewhere.
   await app.locator('.app-sidebar button').last().focus();

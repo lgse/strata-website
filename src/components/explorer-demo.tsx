@@ -97,15 +97,12 @@ export function ExplorerDemo() {
   const active = entries.find((file) => file.name === selected) ?? entries[0];
   const previewVisible = previewOpen && active.type !== 'folder';
   const parentVisible = mode === 'columns' && collection !== 'strata';
-  const visibleActiveColumn =
-    (activeColumn === 'parent' && !parentVisible) || (activeColumn === 'preview' && !previewVisible)
-      ? 'files'
-      : activeColumn;
+  const visibleActiveColumn = activeColumn === 'parent' && !parentVisible ? 'files' : activeColumn;
 
   function activateColumn(target: EventTarget) {
     if (!(target instanceof Element)) return;
     const column = target.closest<HTMLElement>('[data-demo-column]')?.dataset.demoColumn;
-    if (column) setActiveColumn(column);
+    if (column === 'parent' || column === 'files') setActiveColumn(column);
   }
 
   function selectFolder(name: string) {
