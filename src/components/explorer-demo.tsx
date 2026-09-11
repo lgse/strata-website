@@ -241,14 +241,14 @@ export function ExplorerDemo() {
                       disabled={historyIndex === 0}
                       onClick={() => navigateHistory(-1)}
                     >
-                      <ArrowLeft size={13} />
+                      <ArrowLeft size={16} />
                     </button>
                     <button
                       aria-label="Next demo folder"
                       disabled={historyIndex === history.length - 1}
                       onClick={() => navigateHistory(1)}
                     >
-                      <ArrowRight size={13} />
+                      <ArrowRight size={16} />
                     </button>
                     <button
                       aria-label="Navigate up"
@@ -256,7 +256,7 @@ export function ExplorerDemo() {
                       disabled={collection === 'strata'}
                       onClick={navigateUp}
                     >
-                      <ArrowUp size={13} />
+                      <ArrowUp size={16} />
                     </button>
                   </div>
                   <span className="pane-location">{collection}</span>

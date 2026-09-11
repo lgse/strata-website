@@ -36,7 +36,7 @@ export function PaneActions({
         title="Refresh this pane"
         onClick={onRefresh}
       >
-        <RotateCcw size={13} />
+        <RotateCcw size={16} />
       </button>
       <button
         data-pane-action="sort"
@@ -45,17 +45,17 @@ export function PaneActions({
         title="Toggle sort direction"
         onClick={onSort}
       >
-        <DirectionIcon size={13} />
+        <DirectionIcon size={16} />
       </button>
       <details className="pane-sort-options" data-pane-action="options">
         <summary aria-label={`Sort options for ${label}`} title="Sort options">
-          <Settings2 size={13} />
+          <Settings2 size={16} />
         </summary>
         <div className="pane-sort-popover">
           <span className="pane-sort-heading">SORT OPTIONS</span>
           <p>Sort by name</p>
           <button onClick={onSort}>
-            {ascending ? 'Name: Z to A' : 'Name: A to Z'} <DirectionIcon size={13} />
+            {ascending ? 'Name: Z to A' : 'Name: A to Z'} <DirectionIcon size={16} />
           </button>
           <label>
             <input
@@ -75,7 +75,7 @@ export function PaneActions({
         title="Filter this pane"
         onClick={onFilter}
       >
-        <Funnel size={13} />
+        <Funnel size={16} />
       </button>
     </div>
   );

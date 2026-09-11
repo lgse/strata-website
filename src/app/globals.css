@@ -587,7 +587,7 @@ input {
   font-size: 10px;
 }
 .app-toolbar {
-  height: 49px;
+  height: 41px;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface) 48%, var(--background));
   display: flex;

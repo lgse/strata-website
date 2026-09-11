@@ -69,7 +69,7 @@ export function DemoToolbar(props: ToolbarProps) {
         aria-pressed={props.sidebarOpen}
         onClick={props.onSidebar}
       >
-        <PanelLeft size={18} />
+        <PanelLeft size={17} />
       </button>
       <div className="app-breadcrumb">
         <span className="breadcrumb-root">~</span>
@@ -93,7 +93,7 @@ export function DemoToolbar(props: ToolbarProps) {
             aria-controls="demo-view-options"
             onClick={() => setViewOpen(!viewOpen)}
           >
-            <ViewIcon size={18} />
+            <ViewIcon size={16} />
           </button>
           {viewOpen && (
             <div
@@ -159,10 +159,10 @@ export function DemoToolbar(props: ToolbarProps) {
           )}
         </div>
         <button aria-label="Settings" title="Settings (available in the desktop app)" disabled>
-          <Settings size={18} />
+          <Settings size={16} />
         </button>
         <button aria-label="Close demo window" onClick={props.onClose}>
-          <X size={18} />
+          <X size={16} />
         </button>
       </div>
     </div>
