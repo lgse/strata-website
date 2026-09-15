@@ -69,7 +69,7 @@ export function FeatureMatrix() {
             what needs a companion, and where Strata still has gaps.
           </p>
           <span>
-            7 managers <i aria-hidden="true" /> {comparisonFeatures.length} capabilities{' '}
+            6 managers <i aria-hidden="true" /> {comparisonFeatures.length} capabilities{' '}
             <i aria-hidden="true" /> Sources for every cell
           </span>
         </div>
@@ -170,9 +170,8 @@ export function FeatureMatrix() {
         <div>
           <span>WHY SOMETHING ELSE</span>
           <p>
-            Flea shares the keyboard-first column workflow. Krusader, Dolphin, Nemo and Thunar offer
-            independent split panes. Strata’s reviewed build lacks folder tabs, batch renaming and
-            content search.
+            Krusader, Dolphin, Nemo and Thunar offer independent split panes. Strata’s reviewed
+            build lacks folder tabs, batch renaming and content search.
           </p>
         </div>
       </div>
@@ -185,7 +184,7 @@ export function FeatureMatrix() {
             <strong>
               Reviewed <time dateTime={comparisonReviewed}>6 September 2026</time>.
             </strong>{' '}
-            Official documentation and public source were inspected for all seven managers and
+            Official documentation and public source were inspected for all six managers and
             relevant companion components. The pinned revisions below are development snapshots, not
             a promise about the latest stable packages and not the unidentified builds in the
             benchmark screenshots.

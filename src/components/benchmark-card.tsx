@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {
   ArrowDown,
-  ArrowUpRight,
   ChartNoAxesCombined,
   Check,
   ChevronDown,
@@ -11,7 +10,6 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import {
-  benchmarkSources,
   cpuTimings,
   cpuWorkloads,
   largeFolder,
@@ -109,7 +107,6 @@ export function BenchmarkCard() {
   const cpuRows = cpuTimings(cpu).toSorted((a, b) => (a.value ?? Infinity) - (b.value ?? Infinity));
   const isCpu = view === 'cpu';
   const first = view === 'previews' && metric === 'first';
-  const source = isCpu ? 'cpu-activity.png' : visual.source;
 
   return (
     <article id="benchmarks" className={styles.card} aria-labelledby="benchmark-title" data-reveal>
@@ -124,7 +121,7 @@ export function BenchmarkCard() {
             <span>The honest parts.</span>
           </h3>
           <p>
-            Seven file managers. Real workloads. A closer look at where Strata shines, and where
+            Six file managers. Real workloads. A closer look at where Strata shines, and where
             there’s work to do.
           </p>
         </div>
@@ -258,9 +255,6 @@ export function BenchmarkCard() {
               ? 'Strata reaches the first quiet period soonest for 100 MP4s in this run. It is not the quickest for JPEGs, and RAW comparisons are limited by missing or incomplete previews in the other managers.'
               : visual.note}
           </p>
-          <a href={`/benchmarks/${source}`} target="_blank" rel="noreferrer">
-            Source chart <ArrowUpRight size={13} aria-hidden="true" />
-          </a>
         </div>
       </div>
 
@@ -271,8 +265,8 @@ export function BenchmarkCard() {
           </span>
           <h4>Big folders. Broader previews.</h4>
           <p>
-            Second-lowest sampled peak memory at 100k entries. The only complete 12-file RAW preview
-            set in this installation. A strong showing on PDFs, too.
+            Lowest sampled peak memory at 100k entries. The only complete 12-file RAW preview set in
+            this installation. A strong showing on PDFs, too.
           </p>
         </div>
         <div>
@@ -311,13 +305,6 @@ export function BenchmarkCard() {
             ranking or a reproducible benchmark report. CPU results are a separate, single-run
             measurement.
           </p>
-          <nav aria-label="Original benchmark charts">
-            {benchmarkSources.map(({ file, label }) => (
-              <a key={file} href={`/benchmarks/${file}`} target="_blank" rel="noreferrer">
-                {label} <ArrowUpRight size={12} aria-hidden="true" />
-              </a>
-            ))}
-          </nav>
         </div>
       </details>
     </article>

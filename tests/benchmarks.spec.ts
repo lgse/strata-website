@@ -1,21 +1,13 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import {
-  benchmarkSources,
-  cpuTimings,
-  cpuWorkloads,
-  largeFolder,
-  managers,
-  previews,
-} from '../src/lib/benchmarks';
+import { cpuTimings, cpuWorkloads, largeFolder, managers, previews } from '../src/lib/benchmarks';
 
 // Explicit source values guard the headline claims and incomplete-result semantics.
 test('benchmark data preserves capture bounds, coverage and CPU caveats', () => {
-  expect(largeFolder.ready[1]).toMatchObject({ manager: 'Strata', lower: 2.52, value: 2.82 });
-  expect(largeFolder.memory.map(({ value }) => value)).toEqual([86, 135, 163, 238, 299, 302, 440]);
+  expect(largeFolder.ready[0]).toMatchObject({ manager: 'Strata', lower: 2.52, value: 2.82 });
+  expect(largeFolder.memory.map(({ value }) => value)).toEqual([135, 163, 238, 299, 302, 440]);
   const raw = previews.find(({ id }) => id === 'raw')!;
   expect(raw.ready.map(({ label }) => label)).toEqual([
-    '0/12 verified',
     '0.96–1.22 s',
     '11/12 verified',
     '11/12 verified',
@@ -24,10 +16,10 @@ test('benchmark data preserves capture bounds, coverage and CPU caveats', () => 
     '0/12 verified',
   ]);
   expect(raw.ready.filter(({ value }) => value !== null)).toHaveLength(1);
-  expect(previews.find(({ id }) => id === 'tiff')!.ready[5].value).toBeNull();
-  expect(cpuTimings(cpuWorkloads[0])[5]).toMatchObject({ value: null, label: '>60 s (timeout)' });
-  expect(cpuTimings(cpuWorkloads[0])[1].label).toBe('1.01 s ‡');
-  expect(cpuTimings(cpuWorkloads[2])[4].label).toBe('0.25 s † ‡');
+  expect(previews.find(({ id }) => id === 'tiff')!.ready[4].value).toBeNull();
+  expect(cpuTimings(cpuWorkloads[0])[4]).toMatchObject({ value: null, label: '>60 s (timeout)' });
+  expect(cpuTimings(cpuWorkloads[0])[0].label).toBe('1.01 s ‡');
+  expect(cpuTimings(cpuWorkloads[2])[3].label).toBe('0.25 s † ‡');
   for (const fixture of [largeFolder, ...previews]) {
     for (const rows of [fixture.ready, fixture.memory, ...(fixture.first ? [fixture.first] : [])]) {
       expect(rows.map(({ manager }) => manager)).toEqual(managers);
@@ -40,7 +32,6 @@ test('benchmark data preserves capture bounds, coverage and CPU caveats', () => 
 
 test('benchmark controls expose every fixture and preserve honest comparisons', async ({
   page,
-  request,
 }) => {
   await page.goto('/#benchmarks');
   const card = page.getByRole('article', { name: 'The fast parts. The honest parts.' });
@@ -57,7 +48,6 @@ test('benchmark controls expose every fixture and preserve honest comparisons', 
   await expect(cpuList.getByRole('listitem').first()).toContainText('1.73 s');
   await expect(cpuList.getByRole('listitem')).toHaveText([
     /Strata/,
-    /Flea/,
     /Dolphin/,
     /Krusader/,
     /Thunar/,
@@ -67,7 +57,7 @@ test('benchmark controls expose every fixture and preserve honest comparisons', 
   await card.getByRole('button', { name: 'Large folders', exact: true }).click();
   await expect(
     card.getByRole('list', { name: 'Content visually settled', exact: true }).getByRole('listitem'),
-  ).toHaveCount(7);
+  ).toHaveCount(6);
   await expect(card.getByText('2.52–2.82 s', { exact: true })).toBeVisible();
   await expect(
     card
@@ -86,7 +76,7 @@ test('benchmark controls expose every fixture and preserve honest comparisons', 
         name: metric === 'ready' ? fixture.readyTitle : 'First verified thumbnail',
         exact: true,
       });
-      await expect(list.getByRole('listitem')).toHaveCount(7);
+      await expect(list.getByRole('listitem')).toHaveCount(6);
       for (let i = 0; i < rows.length; i++) {
         await expect(list.getByRole('listitem').nth(i)).toContainText(rows[i].label);
         // No graphical bar for a missing or incomplete completion.
@@ -114,11 +104,6 @@ test('benchmark controls expose every fixture and preserve honest comparisons', 
   await expect(
     card.getByText('The source charts do not specify hardware', { exact: false }),
   ).toBeVisible();
-  for (const { file } of benchmarkSources) {
-    const response = await request.get(`/benchmarks/${file}`);
-    expect(response.ok()).toBe(true);
-    expect(response.headers()['content-type']).toContain('image/png');
-  }
 });
 
 test('benchmark graphs reflow, support keyboard controls, and pass dark/light accessibility checks', async ({

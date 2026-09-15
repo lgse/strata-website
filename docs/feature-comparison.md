@@ -4,7 +4,7 @@ The website’s comparison is a public-source review dated **6 September 2026**,
 
 ## Scope
 
-- All seven applications are compared against the same explicit row definitions.
+- All six applications are compared against the same explicit row definitions.
 - Review targets are pinned development snapshots, not necessarily stable releases or the unidentified versions in the performance screenshots.
 - Official handbooks, configuration schemas and implementation paths were checked. Companion components were examined when a feature crosses application boundaries.
 - Built-in functionality can require normal runtime libraries, codecs or protocol backends. An add-on is a separately supplied extension/application, including one a distribution installs by default.
@@ -17,7 +17,6 @@ The website’s comparison is a public-source review dated **6 September 2026**,
 | Application | Public source revision                                                                         |
 | ----------- | ---------------------------------------------------------------------------------------------- |
 | Strata      | [7723db9](https://github.com/lgse/strata/tree/7723db99bd62004e286933903fa59f5956ed0875)        |
-| Flea        | [6e9f9da](https://github.com/thisisgm/flea/tree/6e9f9dae1992ee5be03a17d154a45d1cbed3c136)      |
 | Krusader    | [cdfb4ca](https://github.com/KDE/krusader/tree/cdfb4cacbbed75a641b65347f90ebb9727895e0f)       |
 | Dolphin     | [8fe4b14](https://github.com/KDE/dolphin/tree/8fe4b14520937175f4fe038d9ef3a27e3e1e390a)        |
 | Nautilus    | [1fa90f0](https://github.com/GNOME/nautilus/tree/1fa90f06d31ae2c3e582263357fb6ffee1433e7d)     |
@@ -28,13 +27,12 @@ Dependency citations additionally pin GNOME Desktop, Cinnamon Desktop, Sushi, Ne
 
 ## Important findings
 
-- Flea shares Miller columns, ranked recursive fuzzy path search, rich Quick Look, direct Omarchy palette following and sandboxed thumbnailing. These are not all Strata-exclusive features.
-- Strata documents mandatory fail-closed helpers for original native-parser preview inputs. Flea’s thumbnail sandbox is not the same scope as its Qt full-size image/PDF/media preview paths. GNOME and Cinnamon thumbnailer sandbox implementations also deserve explicit credit; their presence does not establish equivalent policy across all preview types.
+- GNOME and Cinnamon thumbnailer sandbox implementations deserve explicit credit; their presence does not establish equivalent policy across all preview types.
 - Krusader also has an in-app color editor and scheme import/export. Dolphin has an in-app scheme selector, a different capability from palette authoring.
 - Strata’s reviewed source includes archive creation/extraction even though its README feature list does not enumerate it. Source review must not treat README omissions as proof of absence.
-- Flea and the five established managers have folder tabs. Independent split panes are present in Krusader, Dolphin, Nemo and Thunar, not equivalent to Strata/Flea’s parent-child columns.
+- The five established managers have folder tabs. Independent split panes are present in Krusader, Dolphin, Nemo and Thunar, not equivalent to Strata’s parent-child columns.
 - Batch renaming is integrated in Dolphin, Nautilus and Thunar; Krusader integrates KRename and Nemo can invoke a configurable external renamer.
-- Krusader, Dolphin, Nautilus and Nemo offer content search; Thunar can use Catfish. Strata and Flea’s reviewed search paths match names/paths instead.
+- Krusader, Dolphin, Nautilus and Nemo offer content search; Thunar can use Catfish. Strata’s reviewed search path matches names/paths instead.
 - A missing RAW thumbnail in one installed benchmark fixture is not evidence that a manager universally lacks RAW support. The matrix deliberately does not repeat that inference.
 
 ## Updating

@@ -10,7 +10,7 @@ import {
 
 const appNames = comparisonProjects.map(({ name }) => name);
 
-test('all feature assessments have definitions, seven app entries and attributable sources', () => {
+test('all feature assessments have definitions, six app entries and attributable sources', () => {
   expect(comparisonReviewed).toBe('2026-09-06');
   expect(comparisonFeatures).toHaveLength(13);
   expect(new Set(comparisonFeatures.map(({ id }) => id)).size).toBe(comparisonFeatures.length);
@@ -33,17 +33,14 @@ test('all feature assessments have definitions, seven app entries and attributab
     }
   }
   const feature = (id: string) => comparisonFeatures.find((item) => item.id === id)!;
-  for (const id of ['miller', 'fuzzy', 'omarchy', 'preview'])
-    expect(feature(id).cells.flea.status).toBe('built-in');
   expect(feature('palette').cells.krusader.status).toBe('built-in');
-  expect(feature('isolation').cells.flea.status).toBe('partial');
   expect(feature('isolation').cells.dolphin.status).toBe('unverified');
   for (const id of ['tabs', 'split', 'bulk', 'contents', 'terminal'])
     expect(feature(id).cells.strata.status).toBe('not-found');
   expect(feature('archives').cells.strata.status).toBe('built-in');
 });
 
-test('feature matrix filters and opens evidence for all 91 assessments', async ({ page }) => {
+test('feature matrix filters and opens evidence for all 78 assessments', async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto('/#comparison');
   const card = page.locator('#comparison');
@@ -119,7 +116,7 @@ test('matrix has contained horizontal scrolling, sticky row labels and accessibl
       .analyze();
     expect(results.violations).toEqual([]);
     const trigger = card.getByRole('button', {
-      name: 'Flea: Isolated native previews.',
+      name: 'Strata: Isolated native previews.',
       exact: false,
     });
     await trigger.focus();

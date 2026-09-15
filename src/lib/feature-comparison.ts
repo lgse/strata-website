@@ -9,12 +9,6 @@ export const comparisonProjects = [
     revision: '7723db99bd62004e286933903fa59f5956ed0875',
   },
   {
-    id: 'flea',
-    name: 'Flea',
-    repo: 'thisisgm/flea',
-    revision: '6e9f9dae1992ee5be03a17d154a45d1cbed3c136',
-  },
-  {
     id: 'krusader',
     name: 'Krusader',
     repo: 'KDE/krusader',
@@ -111,8 +105,6 @@ function cell(
 }
 const strataReadme = source('strata', 'README.md', 'Strata: features and architecture');
 const strataModes = source('strata', 'src/ui/browser_modes.rs', 'Strata: browser modes');
-const fleaReadme = source('flea', 'README.md', 'Flea: features, settings and keyboard');
-const fleaProtocol = source('flea', 'docs/protocol.md', 'Flea: search and operations protocol');
 const krusaderFeatures = source(
   'krusader',
   'doc/handbook/features.docbook',
@@ -160,11 +152,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         strataReadme,
         strataModes,
       ]),
-      flea: cell(
-        'built-in',
-        'Flea also ships a Miller-column board, alongside list and grid views. This is a shared strength, not a Strata exclusive.',
-        [fleaReadme],
-      ),
       krusader: cell(
         'not-found',
         'The documented file-panel modes are Detailed and Brief. Brief columns list one directory, rather than successive parent/child folders.',
@@ -203,11 +190,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'built-in',
         'Indexes filenames and relative paths in the background and publishes the best 100 fuzzy-ranked matches progressively. It does not search file contents.',
         [strataReadme],
-      ),
-      flea: cell(
-        'built-in',
-        'Its recursive search matches case-insensitive subsequences across relative paths. Matches stream during the walk and are ranked when the walk finishes.',
-        [fleaProtocol],
       ),
       krusader: cell(
         'partial',
@@ -259,11 +241,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'The Add a theme UI edits semantic colors with a live preview and saves shareable TOML palettes.',
         [source('strata', 'docs/themes.md', 'Strata: custom themes'), strataReadme],
       ),
-      flea: cell(
-        'not-found',
-        'The documented settings cover text size, context menus and key presets. Appearance follows Omarchy; no application palette editor was found.',
-        [fleaReadme],
-      ),
       krusader: cell(
         'built-in',
         'Konfigurator exposes panel colors, color-scheme import/export and saved schemes. Strata is not the only app with color editing.',
@@ -304,11 +281,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'Opt-in Follow Omarchy reads and monitors the Quattro palette. Legacy Omarchy theme layouts are not supported.',
         [source('strata', 'docs/themes.md', 'Strata: Omarchy Quattro integration')],
         'Quattro',
-      ),
-      flea: cell(
-        'built-in',
-        'Flea reads the live Omarchy palette and shell tokens. This is another feature shared with Strata.',
-        [fleaReadme],
       ),
       krusader: cell(
         'not-found',
@@ -355,17 +327,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'Original native-parser inputs go through mandatory Bubblewrap helpers with restricted filesystem access, no network and resource limits. Missing isolation fails closed. Bounded text stays in-process; normalized outputs are consumed by the UI, and accelerated media may receive GPU access.',
         [source('strata', 'docs/preview-sandbox.md', 'Strata: preview isolation policy')],
         'Required',
-      ),
-      flea: cell(
-        'partial',
-        'Thumbnailing is mandatory-sandboxed, as are several backend helpers. Full-size image, PDF and media previews load the original paths into Qt UI components, so the scope differs from Strata’s per-file preview-helper policy.',
-        [
-          fleaReadme,
-          source('flea', 'ui/PreviewImage.qml', 'Flea: full-size image loading'),
-          source('flea', 'ui/PreviewMedia.qml', 'Flea: media loading'),
-          source('flea', 'ui/PreviewPdf.qml', 'Flea: original PDF loading'),
-        ],
-        'Scoped',
       ),
       krusader: cell(
         'unverified',
@@ -437,11 +398,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'Image/RAW, PDF pages, bounded text/code, audio and video previews are integrated. Video is a bounded preview, not full-length playback: the documented pipeline limits it to the first 30 seconds.',
         [strataReadme, source('strata', 'docs/preview-sandbox.md', 'Strata: preview limits')],
       ),
-      flea: cell(
-        'built-in',
-        'Space opens Quick Look; its preview column handles images, text, paged PDFs and in-place audio/video. Archive contents are also previewed.',
-        [fleaReadme],
-      ),
       krusader: cell(
         'built-in',
         'The internal viewer and preview panel use installed KParts providers for supported formats. Actual document/media coverage depends on those components.',
@@ -506,12 +462,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         [strataReadme],
         'GIO / GVfs',
       ),
-      flea: cell(
-        'built-in',
-        'Network mounts are integrated in the rail through gio, with GVfs backends for protocols such as SMB and SFTP.',
-        [fleaReadme],
-        'GIO / GVfs',
-      ),
       krusader: cell(
         'built-in',
         'Remote connections include FTP, Samba and SFTP/SCP via KDE KIO workers.',
@@ -574,11 +524,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'The reviewed window hosts a browser with Columns, Icons and List. A directory-tab interface was not found in this snapshot.',
         [source('strata', 'src/ui/window.rs', 'Strata: window implementation'), strataModes],
       ),
-      flea: cell(
-        'built-in',
-        'Open, close and switch up to nine directory tabs. Only the active listing is live.',
-        [fleaReadme],
-      ),
       krusader: cell('built-in', 'Tabbed panels include locked and pinned tabs.', [
         krusaderFeatures,
       ]),
@@ -609,11 +554,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'not-found',
         'Strata’s multi-column browser keeps successive locations in the same hierarchy. An independent two-location split mode was not found.',
         [strataReadme, strataModes],
-      ),
-      flea: cell(
-        'not-found',
-        'Flea has tabs and parent/child column peeks, but its README specifies one live listing and no independent split-pane mode.',
-        [fleaReadme],
       ),
       krusader: cell(
         'built-in',
@@ -659,11 +599,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
             'Strata: single and multiple-selection actions',
           ),
         ],
-      ),
-      flea: cell(
-        'not-found',
-        'The rename protocol and UI operate on one path and one new name. No batch renamer was found in the reviewed interface.',
-        [fleaProtocol, fleaReadme],
       ),
       krusader: cell(
         'addon',
@@ -711,11 +646,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'not-found',
         'Strata explicitly documents filename/path search rather than file-content or metadata search.',
         [strataReadme],
-      ),
-      flea: cell(
-        'not-found',
-        'The documented search walks and matches relative paths. It does not describe reading file contents for search.',
-        [fleaProtocol],
       ),
       krusader: cell(
         'built-in',
@@ -778,11 +708,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
           source('strata', 'src/services/operations.rs', 'Strata: archive formats and operations'),
         ],
       ),
-      flea: cell(
-        'built-in',
-        'Compress and extract are integrated operations using external archive helpers such as bsdtar and 7z. Those runtime tools must be installed.',
-        [fleaReadme, fleaProtocol],
-      ),
       krusader: cell(
         'built-in',
         'Integrated archive browsing, packing, unpacking and testing use supported archive handlers/tools.',
@@ -838,11 +763,6 @@ export const comparisonFeatures: ComparisonFeature[] = [
         'not-found',
         'Open Terminal launches a separate terminal application at the selected location; no embedded terminal pane was found.',
         [source('strata', 'src/ui/browser/desktop.rs', 'Strata: terminal launcher')],
-      ),
-      flea: cell(
-        'not-found',
-        'Ctrl+T and the toolbar button call xdg-terminal-exec for a separate terminal. The unfinished TUI is not an embedded terminal.',
-        [fleaReadme],
       ),
       krusader: cell(
         'built-in',
