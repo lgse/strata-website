@@ -20,6 +20,7 @@ export type VisualBenchmark = {
   ready: BenchmarkDatum[];
   memory: BenchmarkDatum[];
   note: string;
+  source: string;
 };
 
 function timings(values: Six<Timing>): BenchmarkDatum[] {
@@ -49,6 +50,7 @@ export const largeFolder: VisualBenchmark = {
   ]),
   memory: memory([135, 163, 238, 299, 302, 440]),
   note: '90,000 files + 10,000 folders. Strata uses the lowest sampled peak memory here and settles ahead of Dolphin, Nautilus, Nemo and Thunar. Krusader settles sooner.',
+  source: 'large-folders-jpegs.png',
 };
 
 function preview(
@@ -58,6 +60,7 @@ function preview(
   ready: Six<Timing>,
   peaks: Six<number>,
   note: string,
+  source: string,
 ): VisualBenchmark {
   return {
     id,
@@ -67,6 +70,7 @@ function preview(
     memory: memory(peaks),
     readyTitle: 'All 12 thumbnails',
     note,
+    source,
   };
 }
 
@@ -93,6 +97,7 @@ export const previews: VisualBenchmark[] = [
       ],
       [126, 73, 103, 257, 104, 76],
       'Visible viewport only, not all 2,000 thumbnails. Fully visible counts differ: Strata 30, Krusader 29, Dolphin 35, Nautilus 36, Nemo 48, Thunar 64. Native sizes and layouts differ, so this is not equal-work throughput. Strata trails several peers.',
+      'large-folders-jpegs.png',
     ),
     readyTitle: 'Visible thumbnails ready',
   },
@@ -117,6 +122,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [148, 54, 67, 272, 128, 68],
     'Every manager completes the set. Strata is behind Krusader, Dolphin and Thunar on thumbnail readiness, and uses more sampled peak memory than those three.',
+    'jpg-png.png',
   ),
   preview(
     'png',
@@ -139,6 +145,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [146, 110, 117, 278, 124, 80],
     'All 12 previews work, but Krusader and Dolphin finish sooner than Strata. Memory is below Nautilus, not the lightest in the group.',
+    'jpg-png.png',
   ),
   preview(
     'webp',
@@ -161,6 +168,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [143, 97, 121, 261, 137, 81],
     'Strata’s completion bounds overlap Nautilus and Nemo. Krusader and Dolphin finish sooner with lower sampled peak memory.',
+    'webp-tiff.png',
   ),
   preview(
     'tiff',
@@ -169,6 +177,7 @@ export const previews: VisualBenchmark[] = [
     [[0.81, 1.07], [0.0, 0.33], [0.0, 0.29], [0.78, 1.09], '0/12 verified', [1.09, 1.39]],
     [238, 107, 118, 366, 49, 140],
     'Strata completes TIFF previews, but uses the second-highest sampled peak memory here. Nemo has no verified thumbnails in this installation; its low memory is not an equivalent result.',
+    'webp-tiff.png',
   ),
   preview(
     'mp4',
@@ -191,6 +200,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [219, 217, 213, 303, 187, 94],
     'Strata’s MP4 thumbnail completion bounds overlap several peers. Only Nautilus uses more sampled peak memory in this fixture. This measures thumbnails, not video playback.',
+    'mp4-webm.png',
   ),
   preview(
     'webm',
@@ -213,6 +223,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [171, 158, 159, 248, 139, 83],
     'WEBM completion bounds overlap most peers. Strata uses more sampled peak memory than every manager except Nautilus. This measures thumbnails, not video playback.',
+    'mp4-webm.png',
   ),
   preview(
     'pdf',
@@ -235,6 +246,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [135, 160, 169, 238, 107, 89],
     'A stronger showing: Strata completes all PDF thumbnails ahead of Krusader, Dolphin and Nautilus on the reported bounds. Thunar overlaps, so there is no clear win over it.',
+    'pdf-raw.png',
   ),
   preview(
     'raw',
@@ -250,6 +262,7 @@ export const previews: VisualBenchmark[] = [
     ],
     [227, 85, 105, 197, 49, 68],
     'Strata is the only manager with all 12 RAW thumbnails verified in this installation. Krusader and Dolphin reach 11/12; the others 0/12. That coverage comes with the highest sampled peak memory here. Missing previews are not zero-second completions.',
+    'pdf-raw.png',
   ),
 ];
 
@@ -309,3 +322,12 @@ export function cpuTimings(workload: CpuWorkload): BenchmarkDatum[] {
         .join(' ') || undefined,
   }));
 }
+
+export const benchmarkSources = [
+  { file: 'large-folders-jpegs.png', label: 'Large folders / 2,000 JPEGs' },
+  { file: 'jpg-png.png', label: 'JPG / PNG' },
+  { file: 'webp-tiff.png', label: 'WEBP / TIFF' },
+  { file: 'mp4-webm.png', label: 'MP4 / WEBM' },
+  { file: 'pdf-raw.png', label: 'PDF / RAW' },
+  { file: 'cpu-activity.png', label: 'CPU activity' },
+];

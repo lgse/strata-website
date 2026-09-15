@@ -1,6 +1,13 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { cpuTimings, cpuWorkloads, largeFolder, managers, previews } from '../src/lib/benchmarks';
+import {
+  benchmarkSources,
+  cpuTimings,
+  cpuWorkloads,
+  largeFolder,
+  managers,
+  previews,
+} from '../src/lib/benchmarks';
 
 // Explicit source values guard the headline claims and incomplete-result semantics.
 test('benchmark data preserves capture bounds, coverage and CPU caveats', () => {
@@ -32,6 +39,7 @@ test('benchmark data preserves capture bounds, coverage and CPU caveats', () => 
 
 test('benchmark controls expose every fixture and preserve honest comparisons', async ({
   page,
+  request,
 }) => {
   await page.goto('/#benchmarks');
   const card = page.getByRole('article', { name: 'The fast parts. The honest parts.' });
@@ -104,6 +112,11 @@ test('benchmark controls expose every fixture and preserve honest comparisons', 
   await expect(
     card.getByText('The source charts do not specify hardware', { exact: false }),
   ).toBeVisible();
+  for (const { file } of benchmarkSources) {
+    const response = await request.get(`/benchmarks/${file}`);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()['content-type']).toContain('image/png');
+  }
 });
 
 test('benchmark graphs reflow, support keyboard controls, and pass dark/light accessibility checks', async ({
