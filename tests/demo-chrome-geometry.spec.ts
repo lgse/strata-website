@@ -197,3 +197,25 @@ test('file actions line up with the toolbar icons', async ({ page }) => {
     }
   }
 });
+
+test('preview header matches column inset and toolbar action alignment', async ({ page }) => {
+  await page.goto('/');
+  for (const width of [900, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.getByRole('button', { name: 'Miller column', exact: true }).click();
+    const header = page.locator('.preview-title');
+    await expect(header).toHaveCSS('padding-left', '12px');
+    const offsets = await page.locator('.app-window').evaluate((app) => {
+      const center = (node: Element) => {
+        const bounds = node.getBoundingClientRect();
+        return bounds.x + bounds.width / 2;
+      };
+      const upper = [
+        ...app.querySelectorAll('.app-tools > button, .app-view-options > button'),
+      ].slice(-3);
+      const lower = [...app.querySelectorAll('.preview-actions button')];
+      return lower.map((node, index) => Math.abs(center(node) - center(upper[index])));
+    });
+    for (const offset of offsets) expect(offset).toBeLessThan(1);
+  }
+});
