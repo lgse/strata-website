@@ -194,7 +194,7 @@
 .app-window .pane-actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   flex-shrink: 0;
 }
 .app-window .pane-actions > button,
@@ -1146,6 +1146,16 @@
   padding-inline: 6px;
   border-bottom: 1px solid var(--line);
 }
+/* Native Miller spacing: inset header controls and compact, tightly stacked rows. */
+.app-window .mode-columns > :is(.miller-parent, .file-pane) > .pane-title {
+  padding-inline: 12px;
+}
+.app-window.density-compact .mode-columns .file-row {
+  min-height: 26px;
+  padding: 4px 5px;
+  line-height: 16px;
+}
+
 /* Only Miller columns use the active-column accent rule. */
 .app-window .mode-columns :is(.miller-parent, .file-pane) > .pane-title,
 .app-window .mode-columns .preview-title.preview-meta {
@@ -1257,4 +1267,9 @@
   .app-window .browser-area:not(.preview-hidden) > .file-pane {
     min-width: 260px;
   }
+}
+
+/* Use the same right inset and 24px action rhythm as the window toolbar. */
+.app-window .browser-area > :is(.miller-parent, .file-pane) > .pane-title {
+  padding-right: 6px;
 }

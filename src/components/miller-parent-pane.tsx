@@ -98,9 +98,9 @@ export function MillerParentPane({ collections, collection, onFolder }: ParentPa
             {folder ? (
               <div className="folder-peek-anchor">
                 <button
-                  className={`file-row folder-row ${name === collection ? 'selected' : ''}`}
+                  className="file-row folder-row"
                   onClick={() => onFolder(name)}
-                  aria-pressed={name === collection}
+                  aria-current={name === collection ? 'location' : undefined}
                 >
                   <Folder size={16} />
                   <span>{name}</span>

@@ -145,3 +145,55 @@ test('preview image fits within the pane without cropping or overflowing', async
     expect(geometry.bottom).toBeGreaterThan(0);
   }
 });
+
+test('Miller headers are inset and compact rows use native spacing', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+  const app = page.locator('.app-window');
+  for (const pane of ['.miller-parent', '.file-pane']) {
+    const header = app.locator(`${pane} > .pane-title`);
+    await expect(header).toHaveCSS('padding-left', '12px');
+    await expect(header).toHaveCSS('padding-right', '6px');
+    await expectHeight(app.locator(`${pane} .file-row`), 26);
+  }
+});
+
+test('Miller marks the parent path without a second selected row', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
+  const browser = page.locator('.browser-area');
+  await expect(browser.locator('.file-row.selected')).toHaveCount(1);
+  await expect(browser.locator('.miller-parent [aria-current="location"]')).toContainText('assets');
+  await page.getByRole('button', { name: 'src', exact: true }).click();
+  await expect(browser.locator('.file-row.selected')).toHaveCount(1);
+  await expect(browser.locator('.miller-parent [aria-current="location"]')).toContainText('src');
+  await expect(browser.locator('.miller-parent .selected')).toHaveCount(0);
+});
+
+test('file actions line up with the toolbar icons', async ({ page }) => {
+  await page.goto('/');
+  for (const width of [390, 900, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const mode of ['Grid', 'Column']) {
+      await page.getByRole('button', { name: mode, exact: true }).click();
+      const centers = await page.locator('.app-window').evaluate((app) => {
+        const x = (node: Element) => {
+          const box = node.getBoundingClientRect();
+          return box.x + box.width / 2;
+        };
+        const upper = [
+          ...app.querySelectorAll('.app-tools > button, .app-view-options > button'),
+        ].map(x);
+        const lower = [
+          ...app.querySelectorAll(
+            '.file-pane .pane-actions > button, .file-pane .pane-sort-options > summary',
+          ),
+        ].map(x);
+        return { upper: upper.slice(-3), lower: lower.slice(-3) };
+      });
+      centers.upper.forEach((x, index) =>
+        expect(Math.abs(x - centers.lower[index])).toBeLessThan(1),
+      );
+    }
+  }
+});
