@@ -80,7 +80,7 @@ export function ExplorerDemo() {
   const shortcuts = useRef<HTMLDetailsElement>(null);
   const shortcutTrigger = useRef<HTMLElement>(null);
   const [previewOpen, setPreviewOpen] = useState<boolean | null>(null);
-  const [previewWidth, setPreviewWidth] = useState(31);
+  const [previewWidth, setPreviewWidth] = useState(44);
   const [resizingPreview, setResizingPreview] = useState(false);
   const browserArea = useRef<HTMLDivElement>(null);
   const [compact, setCompact] = useState(true);

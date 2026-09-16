@@ -95,3 +95,40 @@ test('mobile chrome stays visible while Miller panes scroll', async ({ page }) =
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('Miller starts with equal file columns and a larger preview', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/');
+  const parent = page.locator('.miller-parent');
+  const files = page.locator('.file-pane');
+  const preview = page.locator('.app-preview');
+  const widths = await Promise.all(
+    [parent, files, preview].map((pane) =>
+      pane.evaluate((node) => node.getBoundingClientRect().width),
+    ),
+  );
+  expect(Math.abs(widths[0] - widths[1])).toBeLessThan(1);
+  expect(widths[2] / widths.reduce((sum, width) => sum + width, 0)).toBeCloseTo(0.44, 2);
+});
+
+test('preview image fits within the pane without cropping or overflowing', async ({ page }) => {
+  await page.goto('/');
+  for (const width of [390, 900, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.getByRole('button', { name: 'Miller column', exact: true }).click();
+    const image = page.locator('.app-preview .preview-image img');
+    await expect(image).toHaveCSS('object-fit', 'contain');
+    const geometry = await page.locator('.app-preview').evaluate((pane) => {
+      const outer = pane.getBoundingClientRect();
+      const frame = pane.querySelector('.preview-image')!.getBoundingClientRect();
+      return {
+        left: frame.left - outer.left,
+        right: outer.right - frame.right,
+        bottom: outer.bottom - frame.bottom,
+      };
+    });
+    expect(geometry.left).toBeGreaterThan(0);
+    expect(geometry.right).toBeGreaterThan(0);
+    expect(geometry.bottom).toBeGreaterThan(0);
+  }
+});

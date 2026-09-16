@@ -825,9 +825,15 @@
 }
 .app-window .preview-image {
   margin: 18px;
+  width: auto;
   flex: 1;
   border: 1px solid var(--line);
   border-radius: 3px;
+}
+.app-window .preview-image img {
+  display: block;
+  object-fit: contain;
+  object-position: center;
 }
 .app-window .preview-code {
   padding: 10px 0;
@@ -960,10 +966,20 @@
 }
 .app-window .app-preview {
   position: relative;
-  flex: 0 0 var(--preview-width, 31%);
-  width: var(--preview-width, 31%);
+  flex: 0 0 var(--preview-width, 44%);
+  width: var(--preview-width, 44%);
   min-width: 0;
 }
+/* Split remaining space equally between Miller columns as the preview resizes. */
+@media (min-width: 851px) {
+  .app-window .browser-area.mode-columns > .miller-parent,
+  .app-window .browser-area.mode-columns > .file-pane {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+  }
+}
+
 .app-window .preview-resize-handle {
   position: absolute;
   inset: 0 auto 0 -5px;
