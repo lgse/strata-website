@@ -181,19 +181,6 @@ input {
   white-space: nowrap;
   border: 0;
 }
-.skip-link {
-  position: fixed;
-  top: -100px;
-  left: 16px;
-  z-index: 200;
-  background: var(--accent);
-  color: var(--on-accent);
-  padding: 12px 20px;
-  border-radius: 6px;
-}
-.skip-link:focus {
-  top: 12px;
-}
 
 /* The quiet frame around a not-so-quiet first impression. */
 .site-header {

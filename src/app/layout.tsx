@@ -56,9 +56,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
       <body className={`${geist.variable} ${mono.variable}`}>
-        <a className="skip-link" href="#main">
-          Skip to content
-        </a>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
