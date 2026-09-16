@@ -799,8 +799,11 @@
 .app-window .preview-properties {
   display: grid;
   grid-template-columns: 0.8fr 1.25fr 1fr;
-  min-height: 62px;
-  padding: 11px 14px;
+  height: 48px;
+  min-height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 6px 14px;
   border-bottom: 1px solid var(--line);
   color: var(--soft);
   font-size: 9px;
@@ -824,11 +827,13 @@
   border-radius: 0;
 }
 .app-window .preview-image {
-  margin: 18px;
-  width: auto;
-  flex: 1;
-  border: 1px solid var(--line);
-  border-radius: 3px;
+  margin: 18px auto;
+  /* Fit the 4:5 artwork below the 41px title, 48px metadata, and 36px margins. */
+  width: min(calc(100% - 36px), calc((100cqh - 125px) * 0.8));
+  aspect-ratio: 4 / 5;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 0;
 }
 .app-window .preview-image img {
   display: block;
@@ -928,8 +933,9 @@
     width: 10px;
   }
   .app-window .preview-properties {
-    min-height: 47px;
-    padding: 8px 7px;
+    height: 40px;
+    min-height: 40px;
+    padding: 4px 7px;
     font-size: 6px;
   }
   .app-window .preview-properties small {
@@ -950,7 +956,9 @@
     padding-left: 6px;
   }
   .app-window .preview-image {
-    margin: 8px;
+    margin: 8px auto;
+    /* Mobile: 41px title + 40px metadata + 16px margins. */
+    width: min(calc(100% - 16px), calc((100cqh - 97px) * 0.8));
   }
 }
 
@@ -966,6 +974,7 @@
 }
 .app-window .app-preview {
   position: relative;
+  container-type: size;
   flex: 0 0 var(--preview-width, 44%);
   width: var(--preview-width, 44%);
   min-width: 0;

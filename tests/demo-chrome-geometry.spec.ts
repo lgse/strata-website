@@ -118,6 +118,19 @@ test('preview image fits within the pane without cropping or overflowing', async
     await page.getByRole('button', { name: 'Miller column', exact: true }).click();
     const image = page.locator('.app-preview .preview-image img');
     await expect(image).toHaveCSS('object-fit', 'contain');
+    await expect(page.locator('.preview-image')).toHaveCSS('border-top-width', '0px');
+    const frame = await page.locator('.preview-image').boundingBox();
+    expect(frame!.width / frame!.height).toBeCloseTo(0.8, 2);
+    const metadata = page.locator('.preview-properties');
+    await expect(metadata).toHaveCSS('height', width <= 620 ? '40px' : '48px');
+    const offsets = await metadata.evaluate((node) => {
+      const bounds = node.getBoundingClientRect();
+      return [...node.children].map((child) => {
+        const box = child.getBoundingClientRect();
+        return Math.abs(box.y + box.height / 2 - (bounds.y + bounds.height / 2));
+      });
+    });
+    for (const offset of offsets) expect(offset).toBeLessThan(1);
     const geometry = await page.locator('.app-preview').evaluate((pane) => {
       const outer = pane.getBoundingClientRect();
       const frame = pane.querySelector('.preview-image')!.getBoundingClientRect();
