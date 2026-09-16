@@ -5,6 +5,7 @@ for (const mode of ['Grid', 'Column']) {
     page,
   }) => {
     await page.goto('/');
+    await page.getByRole('button', { name: 'Miller column', exact: true }).click();
     await page.getByRole('button', { name: 'src', exact: true }).click();
     await page.getByRole('button', { name: mode, exact: true }).click();
     const files = page.locator('.demo-files');

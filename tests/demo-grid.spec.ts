@@ -37,6 +37,7 @@ test('List and Icons retain navigation arrows and omit the Miller accent with pr
   page,
 }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   await page.getByRole('button', { name: 'src', exact: true }).click();
   for (const mode of ['Grid', 'Column']) {
     await page.getByRole('button', { name: mode, exact: true }).click();

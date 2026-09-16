@@ -37,7 +37,7 @@ import {
 import './explorer-demo.css';
 
 function subscribeViewport(callback: () => void) {
-  const media = window.matchMedia('(max-width: 620px)');
+  const media = window.matchMedia('(max-width: 850px)');
   media.addEventListener('change', callback);
   return () => media.removeEventListener('change', callback);
 }
@@ -59,7 +59,7 @@ function FileIcon({ type, size = 15 }: { type: DemoEntry['type']; size?: number 
 }
 
 export function ExplorerDemo() {
-  const [mode, setMode] = useState<Mode>('columns');
+  const [chosenMode, setMode] = useState<Mode | null>(null);
   const [activeColumn, setActiveColumn] = useState('parent');
   const [collection, setCollection] = useState('assets');
   const [selected, setSelected] = useState('night-drive.png');
@@ -68,14 +68,18 @@ export function ExplorerDemo() {
   const [ascending, setAscending] = useState(false);
   const [sorting, setSorting] = useState(false);
   const [grouped, setGrouped] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [chosenSidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const narrow = useSyncExternalStore(
     subscribeViewport,
-    () => window.matchMedia('(max-width: 620px)').matches,
+    () => window.matchMedia('(max-width: 850px)').matches,
     () => false,
   );
-  const [previewOpen, setPreviewOpen] = useState(true);
+  const mode = chosenMode ?? (narrow ? 'column' : 'columns');
+  const sidebarOpen = chosenSidebarOpen ?? !narrow;
+  const shortcuts = useRef<HTMLDetailsElement>(null);
+  const shortcutTrigger = useRef<HTMLElement>(null);
+  const [previewOpen, setPreviewOpen] = useState<boolean | null>(null);
   const [previewWidth, setPreviewWidth] = useState(31);
   const [resizingPreview, setResizingPreview] = useState(false);
   const browserArea = useRef<HTMLDivElement>(null);
@@ -95,7 +99,7 @@ export function ExplorerDemo() {
         : 0,
   );
   const active = entries.find((file) => file.name === selected) ?? entries[0];
-  const previewVisible = previewOpen && active.type !== 'folder';
+  const previewVisible = (previewOpen ?? !narrow) && active.type !== 'folder';
   const parentVisible = mode === 'columns' && collection !== 'strata';
   const visibleActiveColumn = activeColumn === 'parent' && !parentVisible ? 'files' : activeColumn;
 
@@ -147,6 +151,18 @@ export function ExplorerDemo() {
     );
   }
   function moveSelection(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'F1' && shortcuts.current) {
+      event.preventDefault();
+      shortcuts.current.open = !shortcuts.current.open;
+      shortcutTrigger.current?.focus();
+      return;
+    }
+    if (event.key === 'Escape' && shortcuts.current?.open) {
+      shortcuts.current.open = false;
+      shortcutTrigger.current?.focus();
+      return;
+    }
+    if ((event.target as HTMLElement).closest('.demo-shortcuts')) return;
     if (
       (event.target as HTMLElement).tagName === 'INPUT' ||
       (event.target as HTMLElement).closest('.app-toolbar, .pane-actions')
@@ -154,7 +170,7 @@ export function ExplorerDemo() {
       return;
     if (event.key === ' ' && (event.target as HTMLElement).closest('.demo-files')) {
       event.preventDefault();
-      setPreviewOpen(!previewOpen);
+      setPreviewOpen(!previewVisible);
     }
     if (['ArrowDown', 'j', 'ArrowUp', 'k'].includes(event.key)) {
       event.preventDefault();
@@ -504,24 +520,44 @@ export function ExplorerDemo() {
               )}
             </div>
           </div>
-          <div className="app-statusbar" aria-label="Keyboard shortcuts">
-            <span>↕ ↔ &nbsp; Navigate</span>
-            <span>← &nbsp; at first pane &nbsp; Sidebar</span>
-            <span>↑ &nbsp; at top &nbsp; Header</span>
+          <div className="app-statusbar" aria-label="Demo status">
+            <details className="demo-shortcuts" ref={shortcuts}>
+              <summary ref={shortcutTrigger}>
+                <kbd>F1</kbd> Shortcuts
+              </summary>
+              <section className="demo-shortcuts-panel" aria-label="Keyboard shortcuts">
+                <header>
+                  <strong>Keyboard shortcuts</strong>
+                  <button
+                    onClick={() => {
+                      if (shortcuts.current) shortcuts.current.open = false;
+                      shortcutTrigger.current?.focus();
+                    }}
+                  >
+                    Close
+                  </button>
+                </header>
+                <p>Focus the file list to use browsing shortcuts.</p>
+                <dl>
+                  <dt>↑ / ↓ · j / k</dt>
+                  <dd>Move between items</dd>
+                  <dt>Space</dt>
+                  <dd>Toggle preview</dd>
+                  <dt>Tab / Shift+Tab</dt>
+                  <dd>Move between controls</dd>
+                  <dt>Enter</dt>
+                  <dd>Activate focused control</dd>
+                  <dt>F1</dt>
+                  <dd>Toggle shortcuts</dd>
+                  <dt>Escape</dt>
+                  <dd>Close shortcuts</dd>
+                </dl>
+              </section>
+            </details>
             <span>
-              <kbd>Enter</kbd> Open
-            </span>
-            <span>
-              <kbd>Space</kbd> Preview
-            </span>
-            <span>
-              <kbd>Ctrl+F</kbd> Filter
-            </span>
-            <span>
-              <kbd>Ctrl+C</kbd> Copy
-            </span>
-            <span>
-              <kbd>F1</kbd> Shortcuts
+              {entries.some((file) => file.name === selected)
+                ? `1 ${active.type === 'folder' ? 'folder' : 'file'} selected`
+                : 'No items selected'}
             </span>
           </div>
         </div>

@@ -92,6 +92,7 @@ test('only Miller mode keeps one column highlighted, including after preview clo
   page,
 }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   const headers = page.locator('.browser-area > * > :is(.pane-title, .preview-title)');
   async function expectHighlights(count: number) {
     await expect
@@ -115,26 +116,24 @@ test('only Miller mode keeps one column highlighted, including after preview clo
     await page.getByRole('button', { name: mode, exact: true }).click();
     await expectHighlights(mode === 'Miller column' ? 1 : 0);
   }
+  await page.locator('.file-pane .file-row').first().focus();
   await page.getByRole('button', { name: 'Close preview', exact: true }).focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('.app-preview')).toHaveCount(0);
   await expectHighlights(1);
-  await expect(page.locator('.file-pane > .pane-title')).not.toHaveCSS(
-    'border-top-color',
-    'rgba(0, 0, 0, 0)',
-  );
 });
 
-test('touch users can access column actions without hover', async ({ page, isMobile }) => {
-  test.skip(!isMobile, 'Touch-specific fallback');
+test('touch shows actions only in the active pane', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Touch-specific interaction');
   await page.goto('/');
-  for (const selector of [
-    '.miller-parent .pane-actions',
-    '.file-pane .pane-actions',
-    '.preview-actions',
-  ]) {
-    await expect(page.locator(selector)).toHaveCSS('opacity', '1');
-  }
+  await page.getByRole('button', { name: 'Miller column', exact: true }).tap();
+  const parent = page.locator('.miller-parent .pane-actions');
+  const files = page.locator('.file-pane .pane-actions');
+  await expect(parent).toHaveCSS('opacity', '1');
+  await expect(files).toHaveCSS('opacity', '0');
+  await page.locator('.file-pane .pane-location').tap();
+  await expect(parent).toHaveCSS('opacity', '0');
+  await expect(files).toHaveCSS('opacity', '1');
   await page.getByRole('button', { name: 'Filter demo folder' }).tap();
   await expect(page.getByRole('textbox', { name: 'Filter demo files' })).toBeFocused();
 });

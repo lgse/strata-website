@@ -49,7 +49,7 @@ async function checkChrome(page: Page, width: number) {
     await expectHeight(app.locator('.pane-title .pane-actions button:visible'), 24);
     await expect(
       app.locator('.pane-title .pane-actions button:visible').first().locator('svg'),
-    ).toHaveCSS('width', '16px');
+    ).toHaveCSS('width', width <= 620 ? '14px' : '16px');
     if (mode === 'Miller column') {
       await expectHeight(app.locator('.miller-parent > .pane-title'), 41);
       await expectHeight(app.locator('.preview-title'), 41);
@@ -65,4 +65,33 @@ test('interactive explorer chrome matches the native 41px hierarchy on desktop a
   await checkChrome(page, 1440);
   await checkChrome(page, 900);
   await checkChrome(page, 390);
+});
+
+test('mobile chrome stays visible while Miller panes scroll', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.goto('/');
+  const app = page.locator('.app-window');
+  await expect(page.getByRole('button', { name: 'Column', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(app.getByRole('button', { name: 'Toggle demo sidebar' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
+  const before = await app.locator('.app-toolbar').boundingBox();
+  await app.locator('.browser-area').evaluate((node) => {
+    node.scrollLeft = node.scrollWidth;
+  });
+  expect(await app.locator('.browser-area').evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
+  expect(await app.locator('.app-toolbar').boundingBox()).toEqual(before);
+  for (const button of await app.locator('.app-toolbar button').all()) {
+    const box = await button.boundingBox();
+    if (box) {
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(390);
+    }
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

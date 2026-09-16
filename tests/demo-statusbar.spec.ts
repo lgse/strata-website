@@ -23,3 +23,20 @@ test('shortcuts have equal gaps and align with both edges at every viewport', as
     expect(Math.max(...layout.gaps) - Math.min(...layout.gaps)).toBeLessThan(1);
   }
 });
+
+test('shortcuts panel opens by click and F1, and closes with Escape', async ({ page }) => {
+  await page.goto('/');
+  const trigger = page.locator('.demo-shortcuts summary');
+  const panel = page.getByRole('region', { name: 'Keyboard shortcuts' });
+  await expect(panel).toBeHidden();
+  await trigger.click();
+  await expect(panel).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+  await page.keyboard.press('F1');
+  await expect(panel).toBeVisible();
+  await panel.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(panel).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(page.locator('.app-statusbar')).toContainText('1 file selected');
+});

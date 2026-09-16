@@ -1006,54 +1006,109 @@
   box-shadow: 0 5px 18px #0005;
 }
 
-/* Equal gaps, with the outer shortcuts aligned to the bar's padding. */
+/* Keep window chrome fixed; only the browser area scrolls. */
 .app-window .app-statusbar {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  height: 34px;
+  padding-inline: 8px;
+  overflow: visible;
+  color: var(--soft);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.app-window .app-statusbar > span:last-child {
+  margin-left: auto;
+  color: var(--soft);
+}
+.demo-shortcuts summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 4px 6px;
+}
+.demo-shortcuts summary::-webkit-details-marker {
+  display: none;
+}
+.demo-shortcuts kbd {
+  font: inherit;
+}
+.demo-shortcuts-panel {
+  position: absolute;
+  z-index: 30;
+  bottom: 100%;
+  left: 8px;
+  right: 8px;
+  max-height: 350px;
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  white-space: normal;
+  font-size: 12px;
+}
+.demo-shortcuts-panel header {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  height: 32px;
-  padding-inline: 14px;
-  overflow: hidden;
+}
+.demo-shortcuts-panel button {
   color: var(--soft);
-  white-space: nowrap;
+  background: transparent;
 }
-.app-window .app-statusbar > span,
-.app-window .app-statusbar > span:last-child {
-  display: inline-flex;
-  flex: 0 0 auto;
-  gap: 3px;
-  color: var(--soft);
+.demo-shortcuts-panel dl {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
 }
-.app-window .app-statusbar kbd {
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  color: var(--ink);
-  font: inherit;
-  font-weight: 600;
+.demo-shortcuts-panel dd {
+  margin: 0;
 }
-
+.app-window .app-toolbar {
+  min-width: 0;
+}
+.app-window .app-breadcrumb {
+  min-width: 0;
+  flex: 1;
+}
+.app-window .app-tools {
+  flex-shrink: 0;
+}
+.app-window .browser-area {
+  overflow-x: auto;
+}
 @media (max-width: 850px) {
-  .app-window .app-statusbar > span:nth-child(2),
-  .app-window .app-statusbar > span:nth-child(3),
-  .app-window .app-statusbar > span:nth-child(7) {
-    display: none;
+  .app-window .app-sidebar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 15;
+    background: var(--background);
+  }
+  .app-window.sidebar-mobile-open .app-sidebar {
+    width: 172px;
+    padding-inline: 6px;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
   }
 }
 @media (max-width: 620px) {
+  .app-window .mode-columns {
+    min-width: 0;
+  }
+  .app-window .mode-columns > .miller-parent {
+    flex: 0 0 190px;
+  }
+  .app-window .mode-columns > .file-pane {
+    flex: 0 0 230px;
+  }
   .app-window .app-preview {
-    flex-basis: var(--preview-width, 48%);
-    width: var(--preview-width, 48%);
+    flex: 0 0 260px;
   }
   .app-window .preview-resize-handle {
-    display: none;
-  }
-  .app-window .app-statusbar {
-    font-size: 6px;
-  }
-  .app-window .app-statusbar > span:nth-child(6),
-  .app-window .app-statusbar > span:nth-child(8) {
     display: none;
   }
 }
@@ -1080,21 +1135,18 @@
   border-top-color: var(--accent);
 }
 
-/* Touch keeps its controls available; pointer users reveal only the active column.
-   Opacity preserves the header layout and keyboard tab order. Open menus stay usable. */
-@media (hover: hover) and (pointer: fine) {
-  .app-window .pane-actions {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .app-window
-    :is([data-active-column='parent'] > .miller-parent, [data-active-column='files'] > .file-pane)
-    > .pane-title
-    > .pane-actions,
-  .app-window .pane-actions:has(.pane-sort-options[open]) {
-    opacity: 1;
-    pointer-events: auto;
-  }
+/* Show actions only in the hovered/focused column, including on touch screens.
+   Opacity preserves header geometry and keyboard tab order. */
+.app-window .pane-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+.app-window
+  :is([data-active-column='parent'] > .miller-parent, [data-active-column='files'] > .file-pane)
+  > .pane-title
+  > .pane-actions {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* The list heading continues the pane header's rule; do not draw it twice. */
@@ -1169,5 +1221,15 @@
   .app-window .file-pane > .pane-title {
     margin-inline: -4px;
     padding-inline: 7px;
+  }
+  .app-window :is(.pane-actions, .pane-navigation, .preview-actions) svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 850px) {
+  .app-window .browser-area:not(.preview-hidden) > .file-pane {
+    min-width: 260px;
   }
 }
