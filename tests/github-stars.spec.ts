@@ -13,6 +13,19 @@ test('header shows compact stars with an exact accessible count', async ({ page 
   for (const width of [320, 390, 620, 700, 850, 900, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(badge).toBeVisible();
+    if (width <= 620) {
+      const themeTrigger = page.locator('.site-header .theme-trigger');
+      await expect(themeTrigger).toBeVisible();
+      await expect
+        .poll(async () => {
+          const [themeBox, badgeBox] = await Promise.all([
+            themeTrigger.boundingBox(),
+            badge.boundingBox(),
+          ]);
+          return themeBox?.height === badgeBox?.height;
+        })
+        .toBe(true);
+    }
     await expect
       .poll(() =>
         badge.evaluate((node) => {

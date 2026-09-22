@@ -2889,6 +2889,7 @@ body:has(dialog[open]) {
     width: 30px;
   }
   .theme-trigger {
+    height: 32px;
     font-size: 9px;
     padding: 7px 9px;
   }
