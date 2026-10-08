@@ -30,8 +30,10 @@ Dependency citations additionally pin GNOME Desktop, Cinnamon Desktop, Sushi, Ne
 - GNOME and Cinnamon thumbnailer sandbox implementations deserve explicit credit; their presence does not establish equivalent policy across all preview types.
 - Krusader also has an in-app color editor and scheme import/export. Dolphin has an in-app scheme selector, a different capability from palette authoring.
 - Strata’s reviewed source includes archive creation/extraction even though its README feature list does not enumerate it. Source review must not treat README omissions as proof of absence.
-- The five established managers have folder tabs. Independent split panes are present in Krusader, Dolphin, Nemo and Thunar, not equivalent to Strata’s parent-child columns.
-- Batch renaming is integrated in Dolphin, Nautilus and Thunar; Krusader integrates KRename and Nemo can invoke a configurable external renamer.
+- All six managers support folder tabs. Strata’s tab entry uses revision `816af7c1b2c7bd55323391d05d54e93f218065f2`. Independent split panes are present in Krusader, Dolphin, Nemo and Thunar, not equivalent to Strata’s parent-child columns.
+- Strata 1.0 supports English, French, German, Spanish, Japanese, Brazilian Portuguese, Korean, Vietnamese, Italian, and Russian, with language implementation pinned to `5d379b737a9e4d08d09ab3001b207eb039ee1971`. The other language entries cite translation catalogs where verified; Nemo’s coverage remains unverified in this review.
+- Batch renaming is integrated in Dolphin, Nautilus and Thunar; Krusader integrates KRename and Nemo can invoke a configurable external renamer. Strata supports batch renaming through custom actions, including a bundled recipe, rather than a dedicated built-in rename dialog.
+- Strata’s custom-action and external file-provider APIs are assessed at revision `40588520e3e6d5fa90a28a4107fd7c6feca9be60`. Providers can contribute selection-aware menus and status decorations. Dropbox and ShareFile are examples of possible integrations, not claims of bundled adapters. The new comparison rows leave other applications unverified pending a dedicated review.
 - Krusader, Dolphin, Nautilus and Nemo offer content search; Thunar can use Catfish. Strata’s reviewed search path matches names/paths instead.
 - A missing RAW thumbnail in one installed benchmark fixture is not evidence that a manager universally lacks RAW support. The matrix deliberately does not repeat that inference.
 

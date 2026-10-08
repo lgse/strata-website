@@ -12,7 +12,7 @@ const appNames = comparisonProjects.map(({ name }) => name);
 
 test('all feature assessments have definitions, six app entries and attributable sources', () => {
   expect(comparisonReviewed).toBe('2026-09-06');
-  expect(comparisonFeatures).toHaveLength(13);
+  expect(comparisonFeatures).toHaveLength(16);
   expect(new Set(comparisonFeatures.map(({ id }) => id)).size).toBe(comparisonFeatures.length);
   const approvedHosts = ['github.com', 'docs.xfce.org', 'help.gnome.org', 'apps.kde.org'];
   for (const project of comparisonProjects) expect(project.revision).toMatch(/^[a-f0-9]{40}$/);
@@ -35,12 +35,30 @@ test('all feature assessments have definitions, six app entries and attributable
   const feature = (id: string) => comparisonFeatures.find((item) => item.id === id)!;
   expect(feature('palette').cells.krusader.status).toBe('built-in');
   expect(feature('isolation').cells.dolphin.status).toBe('unverified');
-  for (const id of ['tabs', 'split', 'bulk', 'contents', 'terminal'])
+  expect(feature('tabs').cells.strata.status).toBe('built-in');
+  expect(feature('languages').cells.strata.status).toBe('built-in');
+  for (const language of [
+    'English',
+    'French',
+    'German',
+    'Spanish',
+    'Japanese',
+    'Brazilian Portuguese',
+    'Korean',
+    'Vietnamese',
+    'Italian',
+    'Russian',
+  ])
+    expect(feature('languages').cells.strata.note).toContain(language);
+  for (const id of ['split', 'contents', 'terminal'])
     expect(feature(id).cells.strata.status).toBe('not-found');
+  expect(feature('bulk').cells.strata.status).toBe('addon');
+  expect(feature('custom-actions').cells.strata.status).toBe('built-in');
+  expect(feature('file-providers').cells.strata.status).toBe('built-in');
   expect(feature('archives').cells.strata.status).toBe('built-in');
 });
 
-test('feature matrix filters and opens evidence for all 78 assessments', async ({ page }) => {
+test('feature matrix filters and opens evidence for all 96 assessments', async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto('/#comparison');
   const card = page.locator('#comparison');

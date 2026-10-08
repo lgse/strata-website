@@ -27,6 +27,7 @@ test('all explorer modes, folder selection, file previews, filtering, sorting an
   page,
 }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   await page.getByRole('button', { name: 'src', exact: true }).click();
   await expect(page.locator('.preview-meta strong')).toHaveText('main.rs');
   await page.getByRole('button', { name: 'assets', exact: true }).click();
@@ -89,6 +90,7 @@ test('native-style toolbar, navigation, settings and window controls work', asyn
 }) => {
   await page.goto('/');
   const app = page.getByRole('region', { name: 'Interactive Strata illustration' });
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   await app.getByRole('button', { name: 'Toggle demo sidebar' }).click();
   if (isMobile) {
     await expect(app.getByRole('complementary', { name: 'Demo places and devices' })).toBeVisible();
@@ -142,6 +144,7 @@ test('native-style toolbar, navigation, settings and window controls work', asyn
 
 test('demo sidebar uses fictional pinned folders and device names', async ({ page, isMobile }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   if (isMobile) await page.getByRole('button', { name: 'Toggle demo sidebar' }).click();
   const sidebar = page.locator('.app-sidebar');
   for (const name of [
@@ -293,6 +296,7 @@ test('Miller panes share native icons and keep their controls independent', asyn
   isMobile,
 }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   const parent = page.locator('.miller-parent');
   const files = page.locator('.file-pane');
   const actions = ['refresh', 'sort', 'options', 'filter'];
@@ -355,6 +359,7 @@ test('Miller panes share native icons and keep their controls independent', asyn
 
 test('keyboard navigation and fuzzy filename search work', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   await page.getByRole('button', { name: 'night-drive.png', exact: true }).focus();
   await page.keyboard.press('j');
   await expect(page.locator('.preview-meta strong')).toHaveText('brand-guide.md');

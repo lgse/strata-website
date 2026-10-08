@@ -142,6 +142,53 @@ const nemoExtension = (path: string, label: string) =>
 
 export const comparisonFeatures: ComparisonFeature[] = [
   {
+    id: 'languages',
+    title: 'Multi-language support',
+    category: 'Previews & appearance',
+    definition:
+      'Use the application interface in multiple languages, beyond support for international filenames.',
+    cells: {
+      strata: cell(
+        'built-in',
+        'As of Strata 1.0: English, French, German, Spanish, Japanese, Brazilian Portuguese, Korean, Vietnamese, Italian, and Russian.',
+        [
+          dependency(
+            'lgse/strata',
+            '5d379b737a9e4d08d09ab3001b207eb039ee1971',
+            'src/i18n.rs',
+            'Strata 1.0: supported interface languages',
+          ),
+        ],
+        '10 languages',
+      ),
+      krusader: cell(
+        'built-in',
+        'Translated interface catalogs are included, including French. Language counts and completeness vary by release.',
+        [source('krusader', 'po/fr/krusader.po', 'Krusader: French interface catalog')],
+      ),
+      dolphin: cell(
+        'built-in',
+        'Translated interface catalogs are included, including French. Language counts and completeness vary by release.',
+        [source('dolphin', 'po/fr/dolphin.po', 'Dolphin: French interface catalog')],
+      ),
+      nautilus: cell(
+        'built-in',
+        'Translated interface catalogs are included, including French. Language counts and completeness vary by release.',
+        [source('nautilus', 'po/fr.po', 'Nautilus: French interface catalog')],
+      ),
+      nemo: cell(
+        'unverified',
+        'Interface language coverage was not audited in this source review; this is not a claim that translations are unavailable.',
+        [nemoPrefs],
+      ),
+      thunar: cell(
+        'built-in',
+        'Translated interface catalogs are included, including French. Language counts and completeness vary by release.',
+        [source('thunar', 'po/fr.po', 'Thunar: French interface catalog')],
+      ),
+    },
+  },
+  {
     id: 'miller',
     title: 'Miller columns',
     category: 'Navigation',
@@ -520,9 +567,16 @@ export const comparisonFeatures: ComparisonFeature[] = [
       'Keep independent folder locations in switchable tabs inside one window. Miller columns are not tabs.',
     cells: {
       strata: cell(
-        'not-found',
-        'The reviewed window hosts a browser with Columns, Icons and List. A directory-tab interface was not found in this snapshot.',
-        [source('strata', 'src/ui/window.rs', 'Strata: window implementation'), strataModes],
+        'built-in',
+        'Tabbed navigation keeps independent folder locations in one window, with keyboard tab switching and reordering.',
+        [
+          dependency(
+            'lgse/strata',
+            '816af7c1b2c7bd55323391d05d54e93f218065f2',
+            'src/ui/window/composition/tabs.rs',
+            'Strata: tabbed navigation',
+          ),
+        ],
       ),
       krusader: cell('built-in', 'Tabbed panels include locked and pinned tabs.', [
         krusaderFeatures,
@@ -589,16 +643,17 @@ export const comparisonFeatures: ComparisonFeature[] = [
       'Rename a selection of files using one pattern or transformation workflow, not repeated single-file edits.',
     cells: {
       strata: cell(
-        'not-found',
-        'The reviewed rename flow edits one selected item. No batch transformation UI was found.',
+        'addon',
+        'Batch renaming is supported through custom actions configured to run a renaming tool or script on the selection, rather than a built-in batch-rename dialog.',
         [
-          source('strata', 'src/ui/browser/inline_edit.rs', 'Strata: rename implementation'),
-          source(
-            'strata',
-            'src/ui/browser/context_menu.rs',
-            'Strata: single and multiple-selection actions',
+          dependency(
+            'lgse/strata',
+            '40588520e3e6d5fa90a28a4107fd7c6feca9be60',
+            'docs/custom-actions.md',
+            'Strata: custom actions and batch rename recipe',
           ),
         ],
+        'Custom actions',
       ),
       krusader: cell(
         'addon',
@@ -795,6 +850,98 @@ export const comparisonFeatures: ComparisonFeature[] = [
             url: 'https://docs.xfce.org/xfce/thunar/custom-actions',
           },
         ],
+      ),
+    },
+  },
+  {
+    id: 'custom-actions',
+    title: 'Custom actions',
+    category: 'File workflows',
+    definition:
+      'Add user-defined scripts or commands to file and folder context menus, with selection-aware execution.',
+    cells: {
+      strata: cell(
+        'built-in',
+        'Built-in custom actions support Python, Bash and commands, selection filters, and a script library including batch renaming.',
+        [
+          dependency(
+            'lgse/strata',
+            '40588520e3e6d5fa90a28a4107fd7c6feca9be60',
+            'docs/custom-actions.md',
+            'Strata: Custom actions',
+          ),
+        ],
+      ),
+      krusader: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [krusaderFeatures],
+      ),
+      dolphin: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [dolphinHandbook],
+      ),
+      nautilus: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [source('nautilus', 'src/nautilus-window.c', 'Nautilus: window implementation')],
+      ),
+      nemo: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [source('nemo', 'src/nemo-view.c', 'Nemo: file view implementation')],
+      ),
+      thunar: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [thunarWindow],
+      ),
+    },
+  },
+  {
+    id: 'file-providers',
+    title: 'File-provider context menus & decorations',
+    category: 'File workflows',
+    definition:
+      'An integration API for external providers to add state-dependent file and folder context-menu actions and visual status decorations.',
+    cells: {
+      strata: cell(
+        'built-in',
+        'The file-provider API lets external integrations add dynamic context-menu actions, submenus and file/folder status decorations. Services such as Dropbox or ShareFile can integrate through this API; this does not claim bundled adapters.',
+        [
+          dependency(
+            'lgse/strata',
+            '40588520e3e6d5fa90a28a4107fd7c6feca9be60',
+            'docs/file-providers.md',
+            'Strata: File-provider context menus & decorations',
+          ),
+        ],
+      ),
+      krusader: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [krusaderFeatures],
+      ),
+      dolphin: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [dolphinHandbook],
+      ),
+      nautilus: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [source('nautilus', 'src/nautilus-window.c', 'Nautilus: window implementation')],
+      ),
+      nemo: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [source('nemo', 'src/nemo-view.c', 'Nemo: file view implementation')],
+      ),
+      thunar: cell(
+        'unverified',
+        'This capability has not yet been assessed for this application. No absence or parity claim is made.',
+        [thunarWindow],
       ),
     },
   },

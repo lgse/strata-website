@@ -171,7 +171,7 @@ export function FeatureMatrix() {
           <span>WHY SOMETHING ELSE</span>
           <p>
             Krusader, Dolphin, Nemo and Thunar offer independent split panes. Strata’s reviewed
-            build lacks folder tabs, batch renaming and content search.
+            build lacks content search; batch renaming is available through custom actions.
           </p>
         </div>
       </div>
@@ -188,6 +188,12 @@ export function FeatureMatrix() {
             relevant companion components. The pinned revisions below are development snapshots, not
             a promise about the latest stable packages and not the unidentified builds in the
             benchmark screenshots.
+          </p>
+          <p>
+            Strata’s language support reflects the 1.0 update, and folder tabs reflect the newer
+            tabbed-navigation implementation. These entries, custom actions (including batch
+            renaming), and the file-provider API link to specific source revisions; other
+            assessments retain the original review scope.
           </p>
           <p>
             This is a source review, not a hands-on certification of every feature or a security

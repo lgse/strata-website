@@ -395,7 +395,6 @@ export function ExplorerDemo() {
                 <div
                   className="app-preview"
                   data-demo-column="preview"
-                  key={active.name}
                   style={{ '--preview-width': `${previewWidth}%` } as React.CSSProperties}
                 >
                   <div

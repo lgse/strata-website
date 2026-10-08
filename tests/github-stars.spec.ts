@@ -119,3 +119,13 @@ test('stars endpoint fails safely on rate limits, malformed counts and network e
     globalThis.fetch = original;
   }
 });
+
+test('header theme, GitHub and download controls have equal height', async ({ page }) => {
+  await page.goto('/');
+  for (const width of [390, 900, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const controls = page.locator('.nav-actions :is(.theme-trigger, .github-link, .nav-download)');
+    await expect(controls).toHaveCount(3);
+    for (const control of await controls.all()) await expect(control).toHaveCSS('height', '32px');
+  }
+});

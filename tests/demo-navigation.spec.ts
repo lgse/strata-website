@@ -1,5 +1,19 @@
 import { expect, test } from '@playwright/test';
 
+test('responsive defaults keep narrow screens in List with the preview closed', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('.browser-area')).toHaveClass(
+    isMobile ? /mode-column\b/ : /mode-columns\b/,
+  );
+  await expect(page.locator('.app-preview')).toHaveCount(isMobile ? 0 : 1);
+  await page.getByRole('button', { name: 'Miller column', exact: true }).click();
+  await expect(page.locator('.browser-area')).toHaveClass(/mode-columns\b/);
+  await expect(page.locator('.app-preview')).toBeVisible();
+});
+
 for (const mode of ['Grid', 'Column']) {
   test(`${mode} navigates up to strata without changing mode and supports folder history`, async ({
     page,

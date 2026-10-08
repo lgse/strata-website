@@ -818,7 +818,6 @@ input {
   flex: 1;
   padding: 0 18px 13px;
   min-width: 0;
-  animation: preview-in 0.3s ease both;
 }
 .preview-title {
   height: 38px;
@@ -3820,4 +3819,10 @@ body:has(dialog[open]) {
     opacity: 1;
     transform: none;
   }
+}
+
+/* Keep the three header controls on the same vertical rhythm. */
+.nav-actions :is(.theme-trigger, .github-link, .nav-download) {
+  height: 32px;
+  padding-block: 0;
 }
