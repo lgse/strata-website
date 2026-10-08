@@ -868,8 +868,21 @@
   white-space: pre;
   text-overflow: clip;
 }
-.app-window .code-line code.code-comment {
-  color: var(--faint);
+.app-window .syntax-comment {
+  color: var(--soft);
+  font-style: italic;
+}
+.app-window :is(.syntax-property, .syntax-function) {
+  color: var(--accent-ink);
+}
+.app-window :is(.syntax-keyword, .syntax-type) {
+  color: color-mix(in srgb, var(--violet) 65%, var(--contrast));
+}
+.app-window .syntax-string {
+  color: color-mix(in srgb, oklch(from var(--accent) l c calc(h - 110)) 60%, var(--contrast));
+}
+.app-window .syntax-literal {
+  color: color-mix(in srgb, oklch(from var(--accent) l c calc(h + 150)) 60%, var(--contrast));
 }
 
 @media (max-width: 850px) and (min-width: 621px) {

@@ -34,6 +34,7 @@ import {
   type DemoMode as Mode,
   type DemoEntry,
 } from '@/lib/demo-data';
+import { demoCode, highlightDemoLine } from '@/lib/demo-code';
 import './explorer-demo.css';
 
 function subscribeViewport(callback: () => void) {
@@ -99,6 +100,7 @@ export function ExplorerDemo() {
         : 0,
   );
   const active = entries.find((file) => file.name === selected) ?? entries[0];
+  const codePreview = active.type === 'code' ? demoCode[active.name] : undefined;
   const previewVisible = (previewOpen ?? !narrow) && active.type !== 'folder';
   const parentVisible = mode === 'columns' && collection !== 'strata';
   const visibleActiveColumn = activeColumn === 'parent' && !parentVisible ? 'files' : activeColumn;
@@ -463,7 +465,7 @@ export function ExplorerDemo() {
                       {active.type === 'image'
                         ? 'image/png'
                         : active.type === 'code'
-                          ? 'text/plain'
+                          ? (codePreview?.mime ?? 'text/plain')
                           : 'text/markdown'}
                     </span>
                   </div>
@@ -480,25 +482,22 @@ export function ExplorerDemo() {
                     </div>
                   ) : active.type === 'code' ? (
                     <div className="preview-code" aria-label={`Text preview of ${active.name}`}>
-                      {[
-                        '// A little closer to the metal.',
-                        '',
-                        'use strata::App;',
-                        'use strata::theme::Theme;',
-                        '',
-                        'fn main() {',
-                        '    let app = App::new();',
-                        '',
-                        '    app',
-                        '        .native(true)',
-                        '        .theme(Theme::TokyoNight)',
-                        '        .navigate();',
-                        '}',
-                      ].map((line, index) => (
+                      {codePreview?.text.split('\n').map((line, index) => (
                         <div className="code-line" key={index}>
-                          <span className="line-number">{index + 1}</span>
-                          <code className={line.startsWith('//') ? 'code-comment' : ''}>
-                            {line || ' '}
+                          <span className="line-number" aria-hidden="true">
+                            {index + 1}
+                          </span>
+                          <code>
+                            {highlightDemoLine(line, codePreview.language).map(
+                              (token, tokenIndex) => (
+                                <span
+                                  className={token.kind ? `syntax-${token.kind}` : undefined}
+                                  key={tokenIndex}
+                                >
+                                  {token.text}
+                                </span>
+                              ),
+                            )}
                           </code>
                         </div>
                       ))}
