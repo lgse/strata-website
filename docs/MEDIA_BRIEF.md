@@ -26,6 +26,6 @@ Fresh, intentional app captures would make the next version more authentic. Exis
 ## Placement
 
 - `ExplorerDemo` in `src/components/explorer-demo.tsx`: hero app capture / optional demo-versus-recording toggle.
-- `PreviewDemo` in `src/components/preview-demo.tsx`: preview recordings and stills.
+- `PreviewDemo` in `src/components/preview-demo.tsx`: preview recordings and stills. The video players currently play `public/media/night-drive.{webm,mp4}`, an original 8 s loop rendered from the illustration by `npm run media:clip` (`scripts/night-drive-clip`). A real app capture can replace it.
 - Omarchy callout in `src/app/page.tsx`: short theme-sync recording.
 - Performance card in `src/app/page.tsx`: real benchmark evidence, if available.

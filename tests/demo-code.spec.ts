@@ -33,7 +33,7 @@ test('JSON, Rust and TOML previews render matching content with syntax colors', 
   const preview = page.locator('.preview-code');
   const rendered = await preview.locator('code').allTextContents();
   expect(JSON.parse(rendered.join('\n'))).toEqual(JSON.parse(demoCode['colors.json'].text));
-  await expect(page.locator('.preview-properties')).toContainText('application/json');
+  await expect(page.locator('.preview-subtitle')).toContainText('application/json');
   await expect(preview.locator('.syntax-property').first()).toHaveText('"name"');
   await expect(preview.locator('.syntax-string').first()).toHaveText('"Tokyo Night"');
   await expect(preview.locator('.syntax-literal').first()).toHaveText('true');
@@ -47,11 +47,11 @@ test('JSON, Rust and TOML previews render matching content with syntax colors', 
     await page.getByRole('button', { name, exact: true }).click();
     expect((await preview.locator('code').allTextContents()).join('\n')).toBe(demoCode[name].text);
   }
-  await page.getByRole('button', { name: 'Grid', exact: true }).click();
+  await page.getByRole('button', { name: 'Icons', exact: true }).click();
   await page.getByRole('button', { name: 'Navigate up', exact: true }).click();
-  await page.getByRole('button', { name: 'Cargo.toml', exact: true }).click();
+  await page.getByRole('button', { name: /^Cargo\.toml/ }).click();
   expect((await preview.locator('code').allTextContents()).join('\n')).toBe(
     demoCode['Cargo.toml'].text,
   );
-  await expect(page.locator('.preview-properties')).toContainText('application/toml');
+  await expect(page.locator('.preview-subtitle')).toContainText('application/toml');
 });

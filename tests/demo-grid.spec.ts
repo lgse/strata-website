@@ -4,15 +4,18 @@ test('icon view uses centered uncropped thumbnails and reflows without clipping'
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Grid', exact: true }).click();
+  await page.getByRole('button', { name: 'Icons', exact: true }).click();
   await expect(page.locator('.app-preview')).toHaveCount(0);
   await expect(page.locator('.folder-chips')).toHaveCount(0);
-  await expect(page.locator('.grid-thumbnail img')).toHaveCSS('object-fit', 'contain');
+  await expect(page.locator('.grid-thumbnail img').first()).toHaveCSS('object-fit', 'contain');
   const files = page.locator('.demo-files');
   const first = files.locator('.file-row').first();
   await expect(first).toHaveCSS('text-align', 'center');
   await expect(first.locator('.file-name')).toHaveCSS('white-space', 'normal');
-  await expect(first.locator('.grid-thumbnail')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(files.locator('.file-row').nth(1).locator('.grid-thumbnail')).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
   for (const width of [320, 390, 620, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const preview of [false, true]) {
@@ -39,7 +42,7 @@ test('List and Icons retain navigation arrows and omit the Miller accent with pr
   await page.goto('/');
   await page.getByRole('button', { name: 'Miller column', exact: true }).click();
   await page.getByRole('button', { name: 'src', exact: true }).click();
-  for (const mode of ['Grid', 'Column']) {
+  for (const mode of ['Icons', 'List']) {
     await page.getByRole('button', { name: mode, exact: true }).click();
     await expect(page.locator('.pane-navigation')).toBeVisible();
     const up = page.getByRole('button', { name: 'Navigate up', exact: true });

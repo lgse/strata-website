@@ -10,6 +10,7 @@ import {
   Folder,
   GitBranch,
   Keyboard,
+  Languages,
   Layers3,
   Monitor,
   MousePointer2,
@@ -124,6 +125,21 @@ const features = [
     tag: 'CUSTOM THEMES',
   },
 ];
+// Interface languages, in the app's own order and spelling (src/i18n.rs).
+const languages: [code: string, label: string][] = [
+  ['en', 'English'],
+  ['fr', 'Français'],
+  ['de', 'Deutsch'],
+  ['es', 'Español'],
+  ['ja', '日本語'],
+  ['pt-BR', 'Português (Brasil)'],
+  ['ko', '한국어'],
+  ['vi', 'Tiếng Việt'],
+  ['it', 'Italiano'],
+  ['ru', 'Русский'],
+  ['zh-CN', '简体中文'],
+];
+
 const faqs = [
   {
     question: 'What do I need to run Strata?',
@@ -144,6 +160,11 @@ const faqs = [
     question: 'Can I connect to a server or network share?',
     answer:
       'Yes. Enter an smb:// or sftp:// URI in the location field. Strata uses GIO/GVfs and prompts for authentication when needed. FTP, FTPS, and WebDAV are supported with the corresponding installed backends. SCP-style user@host:path addresses are not supported in the current source; use an sftp:// URI for SSH-based browsing.',
+  },
+  {
+    question: 'Which languages does Strata speak?',
+    answer:
+      'Eleven: English, French, German, Spanish, Japanese, Brazilian Portuguese, Korean, Vietnamese, Italian, Russian, and Simplified Chinese. Pick one in Settings or follow the system locale. Keyboard shortcuts are layout-aware too: a key pressed on a Cyrillic or other non-Latin layout resolves to its QWERTY position, so the same bindings work everywhere.',
   },
   {
     question: 'Is it really free and open source?',
@@ -408,6 +429,25 @@ export default function Home() {
                 <p>{description}</p>
               </article>
             ))}
+          </div>
+          <div className="languages-note" data-reveal>
+            <div className="languages-heading">
+              <Languages size={20} strokeWidth={1.5} />
+              <div>
+                <strong>Speaks 11 languages.</strong>
+                <p>
+                  Shortcuts work on any keyboard layout. A key pressed on a Cyrillic or other
+                  non-Latin layout resolves to its QWERTY position, so j and k still move you.
+                </p>
+              </div>
+            </div>
+            <ul className="language-list" aria-label="Interface languages">
+              {languages.map(([code, label]) => (
+                <li key={code} lang={code}>
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="open-source-note" data-reveal>
             <GitBranch size={16} />

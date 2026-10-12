@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "playwright test",
-    "themes:sync": "node scripts/sync-themes.mjs"
+    "themes:sync": "node scripts/sync-themes.mjs",
+    "media:clip": "node scripts/night-drive-clip/render.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",

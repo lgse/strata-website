@@ -1,0 +1,422 @@
+/* Audio and video players for the preview card, modelled on the app's preview pane. */
+.media-player {
+  --mp-accent: var(--accent);
+  --mp-bright: color-mix(in srgb, var(--accent) 60%, var(--text));
+  --mp-peak: color-mix(in srgb, var(--accent) 30%, var(--text));
+  --mp-text: var(--text);
+  --mp-dim: var(--dim-text);
+  --mp-dark: var(--dark);
+  --mp-light: var(--light);
+  --cover: clamp(100px, 27cqw, 150px);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  font-family: var(--font-jetbrains), monospace;
+  color: var(--ink);
+}
+.format-preview:is(.format-video, .format-audio) {
+  height: auto;
+  min-height: 181px;
+}
+.mp-probe {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+/* Artwork: a square sleeve with the record sliding out behind it while playing. */
+.mp-art {
+  position: relative;
+  width: calc(var(--cover) * 1.3);
+  height: var(--cover);
+}
+.mp-disc {
+  --body: color-mix(in srgb, var(--mp-dark) 94%, var(--mp-light));
+  --groove: color-mix(in srgb, var(--mp-light) 5%, transparent);
+  --glint: color-mix(in srgb, var(--mp-light) 9%, transparent);
+  position: absolute;
+  top: calc(var(--cover) * 0.03);
+  left: calc(var(--cover) * 0.09);
+  width: calc(var(--cover) * 0.94);
+  height: calc(var(--cover) * 0.94);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--mp-light) 14%, transparent);
+  background:
+    radial-gradient(circle closest-side, var(--body) 42%, transparent calc(42% + 1px)),
+    conic-gradient(
+      from 30deg,
+      transparent 0%,
+      var(--glint) 8%,
+      transparent 16% 50%,
+      var(--glint) 58%,
+      transparent 66% 100%
+    ),
+    repeating-radial-gradient(circle closest-side, var(--groove) 0 1px, transparent 1px 5.5%),
+    var(--body);
+  box-shadow: 0 calc(var(--cover) * 0.02) calc(var(--cover) * 0.06)
+    color-mix(in srgb, var(--mp-dark) 50%, transparent);
+  transition: left 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.media-player[data-playing='true'] .mp-disc {
+  left: calc(var(--cover) * 0.33);
+}
+.mp-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cover);
+  height: var(--cover);
+  border-radius: clamp(4px, calc(var(--cover) * 0.035), 14px);
+  overflow: hidden;
+  background: var(--mp-dark);
+  box-shadow: 0 calc(var(--cover) * 0.03) calc(var(--cover) * 0.07)
+    color-mix(in srgb, var(--mp-dark) 55%, transparent);
+  animation: mp-fade 0.24s ease-out both;
+}
+.mp-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--mp-text) 8%, transparent);
+}
+.mp-cover img,
+.mp-picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+}
+
+/* Video frame with the ambient glow the app paints from the picture's edges. */
+.mp-frame {
+  position: relative;
+  width: clamp(150px, 44cqw, 236px);
+  aspect-ratio: 16 / 9;
+}
+/* A blurred copy tucked just inside the frame bleeds a soft halo past its edges. */
+.mp-glow {
+  position: absolute;
+  inset: 4px;
+  border-radius: 12px;
+  background: url('/art/night-drive.svg') center / cover;
+  filter: blur(12px) saturate(1.3);
+  opacity: 0.6;
+}
+.mp-picture {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--background) 55%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mp-dark) 45%, transparent);
+  cursor: grab;
+  animation: mp-fade 0.24s ease-out both;
+}
+.mp-picture video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@keyframes mp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Header, analyzer, scrubber and transport. */
+.mp-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.mp-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.mp-eyebrow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 20px;
+}
+.mp-eyebrow {
+  color: var(--dim-text);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.mp-title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mp-video .mp-title {
+  font-size: 12px;
+  font-weight: 700;
+}
+.mp-byline {
+  font-size: 10px;
+  color: var(--dim-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mp-byline b {
+  color: var(--accent);
+  font-weight: 700;
+}
+.mp-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  min-height: 16px;
+}
+.mp-badge {
+  background: color-mix(in srgb, var(--muted) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  border-radius: 4px;
+  color: var(--ink);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  padding: 1px 6px;
+}
+.mp-badge-hdr {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: var(--accent-ink);
+}
+.mp-spectrum {
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+.mp-scrubber {
+  position: relative;
+  height: 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  touch-action: none;
+}
+.mp-scrubber canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.mp-scrubber:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 52%, transparent);
+  outline-offset: 2px;
+}
+.mp-bubble {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: clamp(32px, var(--x), calc(100% - 32px));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 1;
+}
+.mp-bubble-cell {
+  width: 56px;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  background: url('/art/night-drive.svg') 50% 50% / 170% auto
+    color-mix(in srgb, var(--dim-text) 14%, transparent);
+}
+.mp-bubble span {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.mp-transport {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+.mp-time {
+  font-size: 9px;
+  color: var(--dim-text);
+  font-variant-numeric: tabular-nums;
+  min-width: 3.4em;
+}
+.mp-time-end {
+  text-align: right;
+}
+.mp-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mp-button,
+.mp-center {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--accent);
+  transition:
+    transform 0.16s ease-out,
+    background 0.16s ease-out,
+    border-color 0.16s ease-out;
+}
+.mp-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+.mp-button:hover {
+  background: color-mix(in srgb, var(--muted) 62%, transparent);
+  border-color: color-mix(in srgb, var(--border) 42%, transparent);
+}
+.mp-button:active {
+  background: color-mix(in srgb, var(--muted) 82%, transparent);
+  border-color: var(--accent);
+  transform: scale(0.97);
+}
+.mp-center {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--background) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
+}
+.mp-center:hover {
+  background: color-mix(in srgb, var(--muted) 82%, transparent);
+  border-color: var(--accent);
+}
+.mp-center:active {
+  transform: scale(0.94);
+}
+.mp-button:focus-visible,
+.mp-center:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 52%, transparent);
+  outline-offset: 1px;
+}
+.mp-volume {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mp-volume input {
+  appearance: none;
+  width: 44px;
+  height: 14px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.mp-volume input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--accent) var(--fill),
+    color-mix(in srgb, var(--border) 42%, transparent) var(--fill)
+  );
+}
+.mp-volume input::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  margin-top: -3px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.mp-volume input::-moz-range-track {
+  height: 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--border) 42%, transparent);
+}
+.mp-volume input::-moz-range-progress {
+  height: 4px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.mp-volume input::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.mp-volume input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 52%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 850px) {
+  .format-preview:is(.format-video, .format-audio) {
+    min-height: 215px;
+  }
+  .mp-spectrum {
+    height: 56px;
+  }
+}
+@media (max-width: 620px) {
+  .format-preview:is(.format-video, .format-audio) {
+    min-height: 174px;
+  }
+}
+/* Narrow cards and tall panes stack the art above the panel, like the app's upright layout. */
+.media-player.mp-stacked {
+  --cover: min(150px, 46cqw);
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 14px;
+}
+.mp-stacked .mp-panel {
+  width: 100%;
+}
+.mp-stacked .mp-frame {
+  width: 100%;
+}
+@container (max-width: 420px) {
+  .media-player {
+    --cover: 112px;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 14px;
+  }
+  .mp-panel {
+    width: 100%;
+  }
+  .mp-frame {
+    width: min(100%, 260px);
+  }
+  .mp-spectrum {
+    height: 44px;
+  }
+}

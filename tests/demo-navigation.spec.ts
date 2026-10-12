@@ -14,7 +14,7 @@ test('responsive defaults keep narrow screens in List with the preview closed', 
   await expect(page.locator('.app-preview')).toBeVisible();
 });
 
-for (const mode of ['Grid', 'Column']) {
+for (const mode of ['Icons', 'List']) {
   test(`${mode} navigates up to strata without changing mode and supports folder history`, async ({
     page,
   }) => {

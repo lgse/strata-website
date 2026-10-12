@@ -24,7 +24,7 @@
 }
 .app-window .breadcrumb-root {
   color: var(--accent-ink);
-  font-size: 14px;
+  font-size: calc(var(--app-text, 13px) - 1px);
   font-weight: 600;
 }
 .app-window .breadcrumb-parent {
@@ -291,7 +291,7 @@
 }
 @media (max-width: 1000px) {
   .app-window .mode-columns .pane-title {
-    height: 41px;
+    height: 30px;
     flex-wrap: nowrap;
     gap: 3px;
     padding-block: 0;
@@ -323,19 +323,31 @@
 .app-window .mode-column {
   --table-columns: minmax(100px, 1fr) 100px 75px 95px 90px;
 }
+/* The list header is one row tall with row-sized dim text, and the sort arrow ends the Name cell. */
 .app-window .mode-column .table-heading {
   display: grid;
   grid-template-columns: var(--table-columns);
   gap: 0;
   padding: 0;
-  height: 30px;
-  margin-bottom: 5px;
+  height: 26px;
+  min-height: 26px;
+  margin-bottom: 4px;
+  line-height: 1;
+  color: var(--soft);
+  font-size: calc(var(--app-text, 13px) - 1px);
 }
 .app-window .mode-column .table-heading > span {
   display: flex;
   align-items: center;
   padding-inline: 12px;
   border-right: 1px solid var(--line);
+}
+.app-window .mode-column .table-heading > .table-name {
+  justify-content: space-between;
+}
+.app-window .mode-column .table-heading svg {
+  color: var(--accent-ink);
+  flex-shrink: 0;
 }
 .app-window .mode-column .table-heading > span:last-child {
   border-right: 0;
@@ -345,12 +357,12 @@
   grid-template-columns: var(--table-columns);
   gap: 0;
   position: relative;
-  min-height: 33px;
+  min-height: 26px;
   padding: 0;
   border-radius: 0;
   border-color: transparent;
 }
-.app-window .mode-column .file-row > svg {
+.app-window .mode-column .file-row > :is(svg, .file-thumb) {
   position: absolute;
   left: 12px;
   top: 50%;
@@ -360,7 +372,8 @@
   flex-shrink: 0;
 }
 .app-window .mode-column .file-name {
-  padding: 8px 10px 8px 35px;
+  padding: 4px 10px 4px 35px;
+  line-height: 1.3;
 }
 .app-window .mode-column .file-permissions,
 .app-window .mode-column .file-size,
@@ -421,8 +434,8 @@
 .app-window :is(.mode-grid, .mode-column) .file-pane > .pane-title {
   flex-shrink: 0;
   flex-wrap: nowrap;
-  height: 41px;
-  min-height: 41px;
+  height: 30px;
+  min-height: 30px;
   padding-block: 0;
 }
 .app-window :is(.mode-grid, .mode-column) .pane-navigation {
@@ -433,10 +446,11 @@
 }
 .app-window .mode-grid .demo-files {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(112px, 100%), 1fr));
+  justify-content: start;
   align-content: start;
-  gap: 26px 24px;
-  padding: 18px 12px;
+  gap: 10px 6px;
+  padding: 10px 12px;
   flex: 1;
   min-height: 0;
   max-height: none;
@@ -444,24 +458,40 @@
 .app-window .mode-grid .demo-file-wrap {
   min-width: 0;
 }
-.app-window .mode-grid .file-row {
+/* Icon view: the highlight sits on the icon box and the label, never on a card. */
+.app-window .mode-grid .file-row,
+.app-window .mode-grid .file-row.selected,
+.app-window .mode-grid .file-row:hover {
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 126px;
-  padding: 8px 10px;
-  gap: 14px;
+  align-items: center;
+  min-height: 0;
+  padding: 4px 4px 6px;
+  gap: 6px;
   border-radius: 4px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
   text-align: center;
-  font-size: 11px;
+  font-size: var(--app-text, 13px);
+  color: var(--ink);
 }
 .app-window .mode-grid .grid-thumbnail {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 64px;
-  width: 64px;
-  height: 64px;
+  flex: 0 0 60px;
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
   color: var(--accent-ink);
+  transition: background 120ms ease-out;
+}
+.app-window .mode-grid .file-row:hover .grid-thumbnail {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+.app-window .mode-grid .file-row.selected .grid-thumbnail {
+  background: color-mix(in srgb, var(--accent) 22%, var(--muted));
 }
 .app-window .mode-grid .grid-thumbnail img {
   width: 100%;
@@ -469,26 +499,45 @@
   object-fit: contain;
 }
 .app-window .mode-grid .file-name {
-  width: 100%;
+  display: -webkit-box;
+  max-width: 100%;
+  padding: 0 4px;
+  border-radius: 4px;
   white-space: normal;
   overflow-wrap: anywhere;
-  line-height: 1.4;
-  display: -webkit-box;
+  line-height: 1.3;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+.app-window .mode-grid .file-row.selected .file-name {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.app-window .mode-grid .grid-meta {
+  margin-top: -2px;
+  color: var(--faint);
+  font-size: 10px;
+  line-height: 1.3;
+}
 @media (max-width: 620px) {
   .app-window .mode-grid .demo-files {
-    grid-template-columns: repeat(auto-fill, minmax(min(105px, 100%), 1fr));
-    gap: 18px 10px;
-    padding: 12px 4px;
+    grid-template-columns: repeat(auto-fill, minmax(min(84px, 100%), 1fr));
+    gap: 8px 4px;
+    padding: 8px 4px;
   }
   .app-window .mode-grid .file-row {
-    min-height: 114px;
-    padding-inline: 5px;
+    padding-inline: 2px;
     font-size: 9px;
-    gap: 10px;
+    gap: 4px;
+  }
+  .app-window .mode-grid .grid-thumbnail {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+  }
+  .app-window .mode-grid .grid-meta {
+    font-size: 7px;
   }
 }
 
@@ -542,7 +591,7 @@
     position: relative;
   }
   .app-window .app-toolbar {
-    height: 41px;
+    height: 30px;
     padding-inline: 8px;
     gap: 8px;
   }
@@ -607,8 +656,9 @@
     display: none;
   }
   .app-window .mode-column .table-heading {
-    font-size: 6px;
-    height: 25px;
+    font-size: 7px;
+    height: 22px;
+    min-height: 22px;
   }
   .app-window .mode-column .table-heading > span {
     padding-inline: 5px;
@@ -617,7 +667,7 @@
     padding-left: 22px;
     font-size: 7px;
   }
-  .app-window .mode-column .file-row > svg {
+  .app-window .mode-column .file-row > :is(svg, .file-thumb) {
     left: 7px;
     width: 11px;
     height: 11px;
@@ -666,16 +716,26 @@
   height: 560px;
 }
 .app-window {
-  font-size: 12px;
+  font-size: var(--app-text, 13px);
 }
 .app-window .app-toolbar {
-  height: 41px;
+  height: 30px;
   padding-inline: 6px;
   border-bottom-color: var(--border);
 }
-.app-window .app-breadcrumb .breadcrumb-parent,
+/* The full path like the app's toolbar: dim parents, the current folder in accent. */
+.app-window .app-breadcrumb {
+  color: var(--soft);
+  font-size: calc(var(--app-text, 13px) - 1px);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.app-window .app-breadcrumb .breadcrumb-root {
+  color: var(--soft);
+}
 .app-window .app-breadcrumb strong {
-  display: none;
+  color: var(--accent-ink);
+  font-weight: 600;
 }
 
 /* Keep the complete places list fixed while the file panes move independently. */
@@ -684,7 +744,7 @@
   display: block;
   box-sizing: border-box;
   width: 205px;
-  padding: 9px 6px;
+  padding: 4px 6px;
   overflow: hidden;
   opacity: 1;
   visibility: visible;
@@ -708,9 +768,10 @@
     visibility 0s linear 240ms;
 }
 .app-window .sidebar-item {
-  min-height: 29px;
-  padding: 6px 4px;
-  font-size: 11px;
+  min-height: 26px;
+  padding: 3px 4px;
+  font-size: 13px;
+  line-height: 1.3;
 }
 .app-window .sidebar-item > svg:first-child {
   width: 16px;
@@ -723,8 +784,10 @@
 }
 .app-window .sidebar-group .sidebar-heading {
   padding-inline: 4px;
-  padding-bottom: 4px;
-  font-size: 8px;
+  padding-bottom: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
 }
 .app-window .miller-parent {
   width: 28%;
@@ -733,19 +796,20 @@
   width: 34%;
 }
 .app-window .pane-title {
-  height: 41px;
+  height: 30px;
   margin-bottom: 0;
-  font-size: 11px;
+  font-size: 12px;
 }
 .app-window .file-row {
   min-height: 32px;
-  font-size: 11px;
+  gap: 10px;
+  font-size: var(--app-text, 13px);
 }
 .app-window .pane-bottom {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 29px;
+  height: 26px;
   padding-inline: 12px;
   align-items: center;
   border-top: 1px solid var(--line);
@@ -759,7 +823,7 @@
   overflow: hidden;
 }
 .app-window .preview-title.preview-meta {
-  height: 41px;
+  height: 30px;
   padding: 0 6px 0 12px;
   border-bottom: 1px solid var(--line);
   letter-spacing: 0;
@@ -773,8 +837,8 @@
   min-width: 0;
   gap: 9px;
   color: var(--soft);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
 }
 .app-window .preview-title strong svg,
 .app-window .preview-actions svg {
@@ -829,7 +893,7 @@
 }
 .app-window .preview-image {
   margin: 18px auto;
-  /* Fit the 4:5 artwork below the 41px title, 48px metadata, and 36px margins. */
+  /* Fit the 4:5 artwork below the 30px title and the metadata block. */
   width: min(calc(100% - 36px), calc((100cqh - 125px) * 0.8));
   aspect-ratio: 4 / 5;
   flex: 0 0 auto;
@@ -929,12 +993,13 @@
     font-size: 9px;
   }
   .app-window .preview-title.preview-meta {
-    height: 41px;
+    height: 30px;
     padding-inline: 6px;
   }
   .app-window .preview-title strong {
     gap: 5px;
-    font-size: 7px;
+    font-size: 8px;
+    line-height: 9px;
   }
   .app-window .preview-actions {
     gap: 0;
@@ -971,7 +1036,7 @@
   }
   .app-window .preview-image {
     margin: 8px auto;
-    /* Mobile: 41px title + 40px metadata + 16px margins. */
+    /* Mobile: 30px title + metadata block + margins. */
     width: min(calc(100% - 16px), calc((100cqh - 97px) * 0.8));
   }
 }
@@ -1052,11 +1117,11 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  height: 34px;
-  padding-inline: 8px;
+  height: 26px;
+  padding-inline: 11px;
   overflow: visible;
   color: var(--soft);
-  font-size: 10px;
+  font-size: calc(var(--app-text, 13px) - 2px);
   white-space: nowrap;
 }
 .app-window .app-statusbar > span:last-child {
@@ -1066,12 +1131,13 @@
 .demo-shortcuts summary {
   cursor: pointer;
   list-style: none;
-  padding: 4px 6px;
+  padding: 4px 0;
 }
 .demo-shortcuts summary::-webkit-details-marker {
   display: none;
 }
-.demo-shortcuts kbd {
+.demo-shortcuts summary kbd {
+  all: unset;
   font: inherit;
 }
 .demo-shortcuts-panel {
@@ -1162,6 +1228,7 @@
 }
 /* Native Miller spacing: inset header controls and compact, tightly stacked rows. */
 .app-window .mode-columns > :is(.miller-parent, .file-pane) > .pane-title {
+  margin: 0 -4px;
   padding-inline: 12px;
 }
 .app-window.density-compact .mode-columns .file-row {
@@ -1286,4 +1353,447 @@
 /* Use the same right inset and 24px action rhythm as the window toolbar. */
 .app-window .browser-area > :is(.miller-parent, .file-pane) > .pane-title {
   padding-right: 6px;
+}
+
+/* Preview header: the file name with its size, date and type beneath, like the app. */
+.app-window .app-preview {
+  display: flex;
+  flex-direction: column;
+}
+/* Measured from the app: icon and buttons centred, name at 35% down, subtitle at 74%. */
+.app-window .preview-title.preview-meta {
+  align-items: center;
+  padding-left: 9px;
+  /* Sit the content 1px above the bar's geometric centre, as the app does. */
+  padding-bottom: 2px;
+}
+/* Icon, text lines and buttons centre on the bar's content box with 2px clear of each line. */
+.app-window .preview-heading {
+  position: relative;
+  display: block;
+  height: 22px;
+  padding: 0 0 0 24px;
+  min-width: 0;
+}
+.app-window .preview-actions button {
+  height: 22px;
+}
+.app-window .preview-title strong {
+  display: block;
+  margin: 0;
+  color: var(--ink);
+  font-size: calc(var(--app-text, 13px) - 1px);
+  line-height: 13px;
+}
+.app-window .preview-title strong svg {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+}
+.app-window .preview-title strong,
+.app-window .preview-subtitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-window .preview-subtitle {
+  display: block;
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 10px;
+}
+.app-window .preview-actions button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.app-window .preview-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  font-family: var(--font-jetbrains), monospace;
+}
+
+/* Listing thumbnails for media rows, like the app's inline covers and frames. */
+.app-window .file-thumb {
+  display: inline-flex;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+.app-window .file-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-window .thumb-pdf {
+  background: linear-gradient(
+    160deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 70%, var(--dark))
+  );
+}
+.app-window .grid-thumbnail .file-thumb {
+  background: transparent;
+  border-radius: 0;
+}
+.app-window .grid-thumbnail .file-thumb img {
+  object-fit: contain;
+}
+.app-window .grid-thumbnail .thumb-pdf {
+  width: 44px !important;
+  border-radius: 2px;
+}
+
+/* Image: picture on top, EXIF-style metadata beneath. */
+.app-window .preview-image {
+  margin: 14px auto 8px;
+  width: min(calc(100% - 36px), calc((100cqh - 262px) * 0.8));
+}
+.app-window .preview-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: auto 0 0;
+  padding: 10px 18px 16px;
+  color: var(--ink);
+  font-size: 8.5px;
+}
+.app-window .preview-metadata > div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.app-window .preview-metadata dt {
+  color: var(--faint);
+  font-size: 6px;
+  letter-spacing: 0.6px;
+  font-family: var(--font-geist), sans-serif;
+  font-weight: 600;
+}
+.app-window .preview-metadata dd {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Source: a dim gutter and the code, no divider, like the app. */
+.app-window .line-number {
+  border-right: 0;
+}
+
+/* Rendered Markdown and Word documents. */
+.app-window :is(.preview-markdown, .preview-document) {
+  padding: 12px 14px;
+  font-size: 9.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  overflow: hidden;
+}
+.app-window :is(.preview-markdown, .preview-document) :is(h1, h2) {
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.3;
+  color: var(--accent-ink);
+}
+.app-window :is(.preview-markdown, .preview-document) h1 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.app-window :is(.preview-markdown, .preview-document) h2 {
+  margin: 12px 0 6px;
+  font-size: 12px;
+}
+.app-window :is(.preview-markdown, .preview-document) p {
+  margin: 0 0 8px;
+}
+.app-window :is(.preview-markdown, .preview-document) blockquote {
+  margin: 0 0 8px;
+  padding-left: 10px;
+  border-left: 2px solid var(--faint);
+  color: var(--soft);
+  font-style: italic;
+}
+.app-window :is(.preview-markdown, .preview-document) code {
+  padding: 0 3px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+.app-window :is(.preview-markdown, .preview-document) :is(ul, ol) {
+  margin: 0 0 8px;
+  padding-left: 16px;
+}
+.app-window :is(.preview-markdown, .preview-document) ul ul {
+  margin: 0;
+}
+.app-window :is(.preview-markdown, .preview-document) li::marker {
+  color: var(--accent-ink);
+}
+.app-window .checklist {
+  list-style: none;
+  padding-left: 0;
+}
+.app-window .checklist li::before {
+  content: '☐ ';
+  color: var(--faint);
+}
+.app-window .checklist li[data-checked]::before {
+  content: '☑ ';
+  color: var(--accent-ink);
+}
+.app-window :is(.preview-markdown, .preview-document, .preview-body) table {
+  width: 100%;
+  margin: 6px 0 10px;
+  border-collapse: collapse;
+  font-size: 9px;
+}
+.app-window :is(.preview-markdown, .preview-document, .preview-body) th {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  font-weight: 700;
+  text-align: left;
+}
+.app-window :is(.preview-markdown, .preview-document, .preview-body) :is(th, td) {
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+.app-window .preview-body th svg {
+  vertical-align: middle;
+  margin-left: 2px;
+  color: var(--faint);
+}
+
+/* Spreadsheet grid: edge to edge, one row per record. */
+.app-window .preview-table {
+  margin: 0 !important;
+  table-layout: fixed;
+}
+.app-window .preview-table :is(th, td) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-window .preview-table th:last-child,
+.app-window .preview-table td:last-child {
+  width: 42%;
+}
+
+/* Archive contents. */
+.app-window .preview-archive {
+  font-size: 10px;
+  color: var(--ink);
+}
+.app-window .archive-crumbs {
+  padding: 10px 14px 0;
+  color: var(--soft);
+  font-size: 9px;
+}
+.app-window .archive-count {
+  padding: 8px 14px 6px;
+  color: var(--faint);
+  font-size: 8.5px;
+}
+.app-window .archive-row {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 5px 14px;
+}
+.app-window .archive-row svg {
+  color: var(--accent-ink);
+}
+.app-window .archive-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-window .archive-size {
+  color: var(--faint);
+  font-size: 8.5px;
+}
+
+/* PDF: the first page, scaled to the pane. */
+.app-window .preview-pdf {
+  flex: 1;
+  min-height: 0;
+  padding: 0 18px;
+  overflow: hidden;
+}
+.app-window .pdf-sheet {
+  width: 100%;
+  aspect-ratio: 1 / 1.414;
+  padding: 12% 9% 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-geist), sans-serif;
+}
+.app-window .pdf-sheet header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 2px solid currentColor;
+  font-size: 8px;
+  font-weight: 700;
+}
+.app-window .pdf-sheet header i {
+  margin: 0 6px;
+  font-style: normal;
+  opacity: 0.6;
+}
+.app-window .pdf-tag {
+  padding: 0 4px;
+  border-radius: 2px;
+  background: var(--on-accent);
+  color: var(--accent);
+  font-size: 7px;
+}
+.app-window .pdf-sheet h1 {
+  margin: 22% 0 6px;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.app-window .pdf-sheet p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.3;
+  opacity: 0.92;
+}
+
+/* 3D model: a flat-shaded mesh in the theme's accent. */
+.app-window .preview-model {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  cursor: grab;
+}
+.app-window .preview-model svg {
+  width: 100%;
+  height: 100%;
+}
+.app-window .preview-model .face-lit {
+  fill: color-mix(in srgb, var(--accent) 86%, var(--light));
+}
+.app-window .preview-model .face-shade {
+  fill: color-mix(in srgb, var(--accent) 76%, var(--dark));
+}
+
+/* Players sit inside the pane with the app's padding. */
+.app-window .app-preview .media-player {
+  padding: 14px 16px 10px;
+}
+.app-window .app-preview .mp-video {
+  padding: 24px 24px 10px;
+}
+
+@media (max-width: 620px) {
+  .app-window .preview-image {
+    margin: 8px auto 6px;
+    width: min(calc(100% - 16px), calc((100cqh - 230px) * 0.8));
+  }
+  .app-window .preview-heading {
+    padding-left: 16px;
+  }
+  .app-window .preview-title strong svg {
+    width: 11px;
+    height: 11px;
+  }
+  .app-window .preview-subtitle {
+    font-size: 6px;
+  }
+  .app-window .preview-metadata {
+    gap: 4px;
+    padding: 6px 8px 10px;
+    font-size: 6px;
+  }
+  .app-window .preview-metadata > div {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .app-window :is(.preview-markdown, .preview-document) {
+    padding: 8px;
+    font-size: 7px;
+  }
+  .app-window .app-preview .media-player {
+    padding: 8px;
+  }
+}
+
+/* Ten sample files fit the Miller column without scrolling at compact density. */
+.app-window .mode-columns .demo-files {
+  max-height: 330px;
+}
+
+/* Rows sit 4px in from the column edges with a 4px gap below the header, as in the app. */
+.app-window .mode-columns :is(.miller-parent, .file-pane) {
+  padding-inline: 4px;
+}
+.app-window .mode-columns :is(.demo-files, .parent-entries) {
+  padding-top: 4px;
+}
+
+/* View menu: shortcut hints and the text-size stepper, as in the app. */
+.app-window .app-view-popover button > kbd {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--faint);
+  font: inherit;
+  font-size: 10px;
+}
+.app-window .text-size-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 8px 6px;
+}
+.app-window .text-size-row > b {
+  color: var(--accent-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+.app-window .text-size-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.app-window .text-size-stepper > span {
+  min-width: 50px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.app-window .app-view-popover .text-size-stepper > button {
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent-ink);
+}
+.app-window .app-view-popover .text-size-stepper > button:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.app-window .app-view-popover .text-size-stepper > button:disabled {
+  opacity: 0.35;
 }

@@ -7,34 +7,33 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
-import Image from 'next/image';
 import {
+  ArrowDown,
   ArrowLeft,
   ArrowRight,
   ArrowUp,
-  ChevronDown,
-  FileCode2,
-  FileImage,
-  FileText,
-  Folder,
+  PanelRightClose,
   Printer,
   Search,
   SquareArrowOutUpRight,
+  TextWrap,
   X,
 } from 'lucide-react';
 import { Logo } from './logo';
+import { FileIcon } from './file-icon';
+import { PreviewBody, previewMime } from './demo-previews';
 import { DemoSidebar, DemoToolbar } from './demo-chrome';
 import { MillerParentPane } from './miller-parent-pane';
 import { PaneActions } from './pane-actions';
 import { DemoSearch } from './demo-search';
 import {
   demoCollections as collections,
+  demoFileKinds,
   demoModes as modes,
   demoRootEntries,
   type DemoMode as Mode,
   type DemoEntry,
 } from '@/lib/demo-data';
-import { demoCode, highlightDemoLine } from '@/lib/demo-code';
 import './explorer-demo.css';
 
 function subscribeViewport(callback: () => void) {
@@ -43,20 +42,15 @@ function subscribeViewport(callback: () => void) {
   return () => media.removeEventListener('change', callback);
 }
 
+/** The app's icon view shows a size, an item count, or a duration under each name. */
+const gridMeta = (entry: DemoEntry) =>
+  entry.type === 'video' ? '0:08' : entry.type === 'audio' ? '3:24' : entry.size;
+
+const groupOf = (entry: DemoEntry) =>
+  entry.type === 'folder' ? 'Folders' : demoFileKinds[entry.type].group;
+
 function folderEntries(name: string): DemoEntry[] {
   return name === 'strata' ? demoRootEntries : collections[name];
-}
-
-function FileIcon({ type, size = 15 }: { type: DemoEntry['type']; size?: number }) {
-  return type === 'folder' ? (
-    <Folder size={size} />
-  ) : type === 'image' ? (
-    <FileImage size={size} />
-  ) : type === 'code' ? (
-    <FileCode2 size={size} />
-  ) : (
-    <FileText size={size} />
-  );
 }
 
 export function ExplorerDemo() {
@@ -85,6 +79,7 @@ export function ExplorerDemo() {
   const [resizingPreview, setResizingPreview] = useState(false);
   const browserArea = useRef<HTMLDivElement>(null);
   const [compact, setCompact] = useState(true);
+  const [textSize, setTextSize] = useState(13);
   const [closed, setClosed] = useState(false);
   const [history, setHistory] = useState(['assets']);
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -93,15 +88,15 @@ export function ExplorerDemo() {
   const files = entries.filter((file) => file.name.toLowerCase().includes(query.toLowerCase()));
   const displayed = [...files].sort((a, b) =>
     grouped
-      ? a.type.localeCompare(b.type) ||
+      ? groupOf(a).localeCompare(groupOf(b)) ||
         a.name.localeCompare(b.name) * (sorting && !ascending ? -1 : 1)
       : sorting
         ? a.name.localeCompare(b.name) * (ascending ? 1 : -1)
         : 0,
   );
   const active = entries.find((file) => file.name === selected) ?? entries[0];
-  const codePreview = active.type === 'code' ? demoCode[active.name] : undefined;
   const previewVisible = (previewOpen ?? !narrow) && active.type !== 'folder';
+  const textual = ['code', 'text', 'sheet', 'document'].includes(active.type);
   const parentVisible = mode === 'columns' && collection !== 'strata';
   const visibleActiveColumn = activeColumn === 'parent' && !parentVisible ? 'files' : activeColumn;
 
@@ -197,6 +192,7 @@ export function ExplorerDemo() {
       ) : (
         <div
           className={`app-window ${compact ? 'density-compact' : 'density-airy'} ${sidebarOpen ? '' : 'sidebar-hidden'} ${mobileSidebarOpen ? 'sidebar-mobile-open' : ''}`}
+          style={{ '--app-text': `${textSize}px` } as React.CSSProperties}
           onKeyDown={moveSelection}
           role="region"
           aria-label="Interactive Strata illustration"
@@ -218,6 +214,10 @@ export function ExplorerDemo() {
               />
             }
             compact={compact}
+            previewOpen={previewVisible}
+            onPreview={() => setPreviewOpen(!previewVisible)}
+            textSize={textSize}
+            onTextSize={setTextSize}
             grouped={grouped}
             onSidebar={() =>
               narrow ? setMobileSidebarOpen(!mobileSidebarOpen) : setSidebarOpen(!sidebarOpen)
@@ -315,8 +315,8 @@ export function ExplorerDemo() {
                 )}
                 {mode === 'column' && (
                   <div className="table-heading">
-                    <span>
-                      Name <ChevronDown size={10} />
+                    <span className="table-name">
+                      Name <ArrowDown size={12} aria-label="sorted ascending" />
                     </span>
                     <span className="table-permissions">Mode</span>
                     <span className="table-size">Size</span>
@@ -327,17 +327,10 @@ export function ExplorerDemo() {
                 <div className="demo-files">
                   {displayed.map((file, index) => (
                     <div key={file.name} className="demo-file-wrap">
-                      {grouped && (index === 0 || displayed[index - 1].type !== file.type) && (
-                        <div className="file-group-heading">
-                          {file.type === 'folder'
-                            ? 'Folders'
-                            : file.type === 'image'
-                              ? 'Images'
-                              : file.type === 'code'
-                                ? 'Source code'
-                                : 'Documents'}
-                        </div>
-                      )}
+                      {grouped &&
+                        (index === 0 || groupOf(displayed[index - 1]) !== groupOf(file)) && (
+                          <div className="file-group-heading">{groupOf(file)}</div>
+                        )}
                       <button
                         className={`file-row ${active.name === file.name ? 'selected' : ''}`}
                         aria-pressed={active.name === file.name}
@@ -352,16 +345,13 @@ export function ExplorerDemo() {
                       >
                         {mode === 'grid' ? (
                           <span className={`grid-thumbnail thumbnail-${file.type}`}>
-                            {file.type === 'image' ? (
-                              <Image src="/art/night-drive.svg" alt="" width={64} height={64} />
-                            ) : (
-                              <FileIcon type={file.type} size={56} />
-                            )}
+                            <FileIcon type={file.type} size={44} thumbnails />
                           </span>
                         ) : (
-                          <FileIcon type={file.type} />
+                          <FileIcon type={file.type} thumbnails />
                         )}
                         <span className="file-name">{file.name}</span>
+                        {mode === 'grid' && <span className="grid-meta">{gridMeta(file)}</span>}
                         {mode === 'column' && (
                           <>
                             <span className="file-permissions">
@@ -369,13 +359,7 @@ export function ExplorerDemo() {
                             </span>
                             <span className="file-size">{file.size}</span>
                             <span className="file-type">
-                              {file.type === 'folder'
-                                ? 'Folder'
-                                : file.type === 'image'
-                                  ? 'PNG image'
-                                  : file.type === 'code'
-                                    ? 'Source code'
-                                    : 'Markdown'}
+                              {file.type === 'folder' ? 'Folder' : demoFileKinds[file.type].label}
                             </span>
                             <span className="file-modified">
                               {file.name === 'night-drive.png' ? '2m ago' : 'Yesterday'}
@@ -431,89 +415,46 @@ export function ExplorerDemo() {
                     }}
                   />
                   <div className="preview-title preview-meta">
-                    <strong>
-                      <FileIcon type={active.type} size={16} />
-                      {active.name}
-                    </strong>
+                    <div className="preview-heading">
+                      <strong>
+                        <FileIcon type={active.type} size={16} />
+                        {active.name}
+                      </strong>
+                      <small className="preview-subtitle">
+                        {active.size} · Aug 14, 11:42 · {previewMime(active)}
+                      </small>
+                    </div>
                     <div className="preview-actions" aria-label="Preview controls">
+                      {textual && (
+                        <button aria-label="Find in preview" title="Find">
+                          <Search size={14} />
+                        </button>
+                      )}
                       <button aria-label="Open preview in a new window" title="Open externally">
                         <SquareArrowOutUpRight size={14} />
                       </button>
-                      <button aria-label="Print preview" title="Print">
-                        <Printer size={14} />
-                      </button>
+                      {(textual || active.type === 'image' || active.type === 'pdf') && (
+                        <button aria-label="Print preview" title="Print">
+                          <Printer size={14} />
+                        </button>
+                      )}
+                      {textual && (
+                        <button aria-label="Wrap long lines" title="Wrap lines" aria-pressed="true">
+                          <TextWrap size={14} />
+                        </button>
+                      )}
                       <button
                         aria-label="Close preview"
                         title="Close preview"
                         onClick={() => setPreviewOpen(false)}
                       >
-                        <X size={14} />
+                        <PanelRightClose size={14} />
                       </button>
                     </div>
                   </div>
-                  <div className="preview-properties">
-                    <span>
-                      <small>SIZE</small>
-                      {active.size}
-                    </span>
-                    <span>
-                      <small>MODIFIED</small>
-                      Aug 14, 11:42
-                    </span>
-                    <span>
-                      <small>TYPE</small>
-                      {active.type === 'image'
-                        ? 'image/png'
-                        : active.type === 'code'
-                          ? (codePreview?.mime ?? 'text/plain')
-                          : 'text/markdown'}
-                    </span>
+                  <div className="preview-body" key={active.name}>
+                    <PreviewBody file={active} />
                   </div>
-                  {active.type === 'image' ? (
-                    <div className="preview-image">
-                      <Image
-                        src="/art/night-drive.svg"
-                        alt="Illustrated moonlit mountain road in a purple night landscape"
-                        width={800}
-                        height={1000}
-                        loading="eager"
-                      />
-                      <span className="image-label">THE LONG WAY HOME</span>
-                    </div>
-                  ) : active.type === 'code' ? (
-                    <div className="preview-code" aria-label={`Text preview of ${active.name}`}>
-                      {codePreview?.text.split('\n').map((line, index) => (
-                        <div className="code-line" key={index}>
-                          <span className="line-number" aria-hidden="true">
-                            {index + 1}
-                          </span>
-                          <code>
-                            {highlightDemoLine(line, codePreview.language).map(
-                              (token, tokenIndex) => (
-                                <span
-                                  className={token.kind ? `syntax-${token.kind}` : undefined}
-                                  key={tokenIndex}
-                                >
-                                  {token.text}
-                                </span>
-                              ),
-                            )}
-                          </code>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="preview-markdown">
-                      <span className="eyebrow">THE STRATA PROJECT</span>
-                      <h3>Room to explore.</h3>
-                      <p>A fast, keyboard-first file manager for modern Linux desktops.</p>
-                      <hr />
-                      <span>01 / Navigate every layer</span>
-                      <span>02 / Stay in your flow</span>
-                      <span>03 / Make it your own</span>
-                      <Logo />
-                    </div>
-                  )}
                 </div>
               )}
             </div>

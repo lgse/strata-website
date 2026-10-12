@@ -112,7 +112,7 @@ test('only Miller mode keeps one column highlighted, including after preview clo
     'rgba(0, 0, 0, 0)',
   );
   await expectHighlights(1);
-  for (const mode of ['Grid', 'Column', 'Miller column']) {
+  for (const mode of ['Icons', 'List', 'Miller column']) {
     await page.getByRole('button', { name: mode, exact: true }).click();
     await expectHighlights(mode === 'Miller column' ? 1 : 0);
   }

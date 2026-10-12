@@ -1,17 +1,9 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
-import {
-  ArrowDownUp,
-  CornerDownLeft,
-  FileCode2,
-  FileImage,
-  FileText,
-  Folder,
-  Search,
-  X,
-} from 'lucide-react';
+import { ArrowDownUp, CornerDownLeft, Folder, Search, X } from 'lucide-react';
 import { demoCollections } from '@/lib/demo-data';
+import { demoFileIcon } from './file-icon';
 import './demo-search.css';
 
 const entries = Object.entries(demoCollections).flatMap(([folder, files]) => [
@@ -21,7 +13,7 @@ const entries = Object.entries(demoCollections).flatMap(([folder, files]) => [
     path: `${folder}/${file.name}`,
     folder,
     file: file.name,
-    icon: file.type === 'image' ? FileImage : file.type === 'code' ? FileCode2 : FileText,
+    icon: demoFileIcon(file.type),
   })),
 ]);
 

@@ -12,9 +12,10 @@ import {
   X,
 } from 'lucide-react';
 import { PaneActions } from './pane-actions';
+import type { DemoFile } from '@/lib/demo-data';
 
 type ParentPaneProps = {
-  collections: Record<string, readonly { name: string; type: 'image' | 'code' | 'text' }[]>;
+  collections: Record<string, readonly DemoFile[]>;
   collection: string;
   onFolder: (name: string) => void;
 };

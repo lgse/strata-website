@@ -15,7 +15,18 @@ test('changing preview files does not animate the panel or move the page', async
   const original = await preview.elementHandle();
   const bounds = await preview.boundingBox();
   const scroll = await page.evaluate(() => window.scrollY);
-  for (const name of ['brand-guide.md', 'night-drive.png', 'colors.json', 'readme.md']) {
+  for (const name of [
+    'brand-guide.md',
+    'night-drive.png',
+    'colors.json',
+    'night-drive.flac',
+    'ridge-line.mp4',
+    'field-notes.pdf',
+    'pyramids.3mf',
+    'inventory.tsv',
+    'quarterly-report.docx',
+    'project.zip',
+  ]) {
     await page.locator('.demo-files .file-row').filter({ hasText: name }).click();
     await expect(page.locator('.preview-meta strong')).toHaveText(name);
     expect(await original!.evaluate((node) => node.isConnected)).toBe(true);

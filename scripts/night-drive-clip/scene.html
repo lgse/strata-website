@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#101326;overflow:hidden}svg{display:block;width:960px;height:540px}</style></head><body>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#101326"/><stop offset=".48" stop-color="#34305c"/><stop offset=".68" stop-color="#e5979c"/><stop offset="1" stop-color="#e5979c"/></linearGradient>
+<linearGradient id="sun" x2="0" y2="1"><stop stop-color="#ffe0bb"/><stop offset="1" stop-color="#e0a7c6"/></linearGradient>
+<radialGradient id="halo"><stop offset="0" stop-color="#ffd7c0" stop-opacity=".4"/><stop offset="1" stop-color="#ffd7c0" stop-opacity="0"/></radialGradient>
+<linearGradient id="road" x2="0" y2="1"><stop stop-color="#545177"/><stop offset="1" stop-color="#171a2c"/></linearGradient>
+<radialGradient id="mist"><stop offset="0" stop-color="#8f86b8" stop-opacity=".22"/><stop offset="1" stop-color="#8f86b8" stop-opacity="0"/></radialGradient>
+<path id="tree" d="m0 0-33 129h22l-40 94h40v157h20V380h43l-36-94h22Z" fill="#121b2c"/>
+</defs>
+<rect width="800" height="450" fill="url(#sky)"/>
+<g id="stars" fill="#e0dafa"></g>
+<line id="streak" x1="0" y1="0" x2="0" y2="0" stroke="#fff3e6" stroke-width="2" stroke-linecap="round" opacity="0"/>
+<circle id="halo" cx="500" cy="170" r="150" fill="url(#halo)"/>
+<circle cx="500" cy="170" r="92" fill="url(#sun)"/>
+<g id="back"><path d="M-60 300H0l120-140 70 85 130-125 200 180 120-130 160 120h60v170H-60Z" fill="#454366"/><path d="m320 120-60 115 55-25 40 40 20-24Z" fill="#8882a3"/></g>
+<ellipse id="mist1" cx="300" cy="300" rx="260" ry="32" fill="url(#mist)"/>
+<g id="mid"><path d="M-60 380H0l170-130 110 120 120-80 140 100 180-110 80 70h60v100H-60Z" fill="#292c49"/></g>
+<ellipse id="mist2" cx="560" cy="385" rx="300" ry="28" fill="url(#mist)"/>
+<g id="front"><path d="M-60 430H0l150-100 150 90 170-70 150 50 140-80 100 80h60v50H-60Z" fill="#1c223a"/>
+<path d="M396 345C330 380 470 400 380 430L300 450H580C520 420 470 410 470 380 470 360 420 355 404 345Z" fill="url(#road)"/>
+<path id="dash" d="M400 346C370 380 460 400 400 430L380 450" fill="none" stroke="#c7adc6" stroke-width="2.5" stroke-dasharray="16 16" opacity=".55"/>
+<use href="#tree" transform="translate(70 242) scale(.55)"/><use href="#tree" transform="translate(735 230) scale(.58)"/><use href="#tree" transform="translate(150 318) scale(.35)"/><use href="#tree" transform="translate(640 330) scale(.32)"/></g>
+</svg>
+<script>
+const T = 8;
+const stars = []; let seed = 7;
+const rand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+const g = document.getElementById('stars');
+for (let i = 0; i < 70; i++) {
+  const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  c.setAttribute('cx', (rand() * 800).toFixed(1)); c.setAttribute('cy', (8 + rand() * 230).toFixed(1));
+  c.setAttribute('r', (0.8 + rand() * 1.1).toFixed(2)); g.appendChild(c);
+  stars.push({ el: c, k: 1 + Math.floor(rand() * 3), phase: rand() * Math.PI * 2, base: 0.35 + rand() * 0.4 });
+}
+const sway = (amp, t, phase = 0) => amp * Math.sin((2 * Math.PI * t) / T + phase);
+window.render = (t) => {
+  for (const s of stars) s.el.setAttribute('opacity', (s.base + 0.3 * Math.sin((2 * Math.PI * s.k * t) / T + s.phase)).toFixed(3));
+  document.getElementById('halo').setAttribute('opacity', (0.8 + 0.2 * Math.sin((2 * Math.PI * t) / T)).toFixed(3));
+  document.getElementById('back').setAttribute('transform', `translate(${sway(6, t).toFixed(2)} 0)`);
+  document.getElementById('mid').setAttribute('transform', `translate(${sway(12, t).toFixed(2)} 0)`);
+  document.getElementById('front').setAttribute('transform', `translate(${sway(20, t).toFixed(2)} 0)`);
+  document.getElementById('mist1').setAttribute('transform', `translate(${sway(40, t, 1).toFixed(2)} 0)`);
+  document.getElementById('mist2').setAttribute('transform', `translate(${sway(-50, t, 2).toFixed(2)} 0)`);
+  document.getElementById('dash').setAttribute('stroke-dashoffset', (-32 * t).toFixed(2));
+  const s0 = 2.6, dur = 0.7, u = (t - s0) / dur, streak = document.getElementById('streak');
+  if (u >= 0 && u <= 1) {
+    const x = 600 + u * 110, y = 48 + u * 46;
+    streak.setAttribute('x1', x - 34); streak.setAttribute('y1', y - 14); streak.setAttribute('x2', x); streak.setAttribute('y2', y);
+    streak.setAttribute('opacity', (Math.sin(u * Math.PI) * 0.9).toFixed(3));
+  } else streak.setAttribute('opacity', '0');
+};
+</script></body></html>

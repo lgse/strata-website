@@ -4,7 +4,11 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { demoModes, type DemoMode } from '@/lib/demo-data';
 import {
   Check,
+  Eye,
+  Minus,
+  Plus,
   Rows3,
+  Rows4,
   Download,
   Eject,
   EyeOff,
@@ -35,6 +39,10 @@ interface ToolbarProps {
   onClose: () => void;
   onCompact: (value: boolean) => void;
   onGrouped: (value: boolean) => void;
+  previewOpen: boolean;
+  onPreview: () => void;
+  textSize: number;
+  onTextSize: (size: number) => void;
 }
 
 export function DemoToolbar(props: ToolbarProps) {
@@ -73,7 +81,7 @@ export function DemoToolbar(props: ToolbarProps) {
       </button>
       <div className="app-breadcrumb">
         <span className="breadcrumb-root">~</span>
-        <span className="breadcrumb-parent">/ Projects / strata /</span>
+        <span className="breadcrumb-parent">/ Documents / strata /</span>
         <strong>{props.collection}</strong>
       </div>
       <div className="app-tools">
@@ -118,6 +126,18 @@ export function DemoToolbar(props: ToolbarProps) {
                   {props.mode === id && <Check size={15} />}
                 </button>
               ))}
+              <button
+                aria-pressed={props.previewOpen}
+                onClick={() => {
+                  props.onPreview();
+                  setViewOpen(false);
+                  trigger.current?.focus();
+                }}
+              >
+                <Eye size={16} />
+                <span>Preview panel</span>
+                <kbd>Space</kbd>
+              </button>
               <div className="view-section" role="group" aria-label="Density">
                 <span className="view-section-label">DENSITY</span>
                 {[true, false].map((compact) => (
@@ -126,11 +146,34 @@ export function DemoToolbar(props: ToolbarProps) {
                     aria-pressed={props.compact === compact}
                     onClick={() => props.onCompact(compact)}
                   >
-                    <Rows3 size={16} />
+                    {compact ? <Rows4 size={16} /> : <Rows3 size={16} />}
                     <span>{compact ? 'Compact' : 'Airy'}</span>
                     {props.compact === compact && <Check size={15} />}
                   </button>
                 ))}
+              </div>
+              <div className="view-section" role="group" aria-label="Text size">
+                <span className="view-section-label">TEXT SIZE</span>
+                <div className="text-size-row">
+                  <b aria-hidden="true">Aa</b>
+                  <div className="text-size-stepper">
+                    <button
+                      aria-label="Smaller text"
+                      disabled={props.textSize <= 11}
+                      onClick={() => props.onTextSize(props.textSize - 1)}
+                    >
+                      <Minus size={13} />
+                    </button>
+                    <span aria-live="polite">{props.textSize} px</span>
+                    <button
+                      aria-label="Larger text"
+                      disabled={props.textSize >= 15}
+                      onClick={() => props.onTextSize(props.textSize + 1)}
+                    >
+                      <Plus size={13} />
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="view-section appearance-toggles">
                 <label>

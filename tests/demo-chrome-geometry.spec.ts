@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const modes = ['Miller column', 'Grid', 'Column'] as const;
+const modes = ['Miller column', 'Icons', 'List'] as const;
 
 async function expectHeight(locator: Locator, height: number) {
   const boxes = await locator.evaluateAll((nodes) =>
@@ -17,7 +17,7 @@ async function checkChrome(page: Page, width: number) {
   const app = page.getByRole('region', { name: 'Interactive Strata illustration' });
   const toolbar = app.locator('.app-toolbar');
 
-  await expectHeight(toolbar, 41);
+  await expectHeight(toolbar, 30);
   await expectHeight(
     toolbar.locator(
       ':scope > .app-sidebar-toggle, :scope > .app-tools > button, :scope > .app-tools > .app-view-options > button',
@@ -45,19 +45,19 @@ async function checkChrome(page: Page, width: number) {
 
   for (const mode of modes) {
     await page.getByRole('button', { name: mode, exact: true }).click();
-    await expectHeight(app.locator('.file-pane > .pane-title'), 41);
+    await expectHeight(app.locator('.file-pane > .pane-title'), 30);
     await expectHeight(app.locator('.pane-title .pane-actions button:visible'), 24);
     await expect(
       app.locator('.pane-title .pane-actions button:visible').first().locator('svg'),
     ).toHaveCSS('width', width <= 620 ? '14px' : '16px');
     if (mode === 'Miller column') {
-      await expectHeight(app.locator('.miller-parent > .pane-title'), 41);
-      await expectHeight(app.locator('.preview-title'), 41);
+      await expectHeight(app.locator('.miller-parent > .pane-title'), 30);
+      await expectHeight(app.locator('.preview-title'), 30);
     }
   }
 }
 
-test('interactive explorer chrome matches the native 41px hierarchy on desktop and mobile', async ({
+test('interactive explorer chrome matches the native 30px chrome hierarchy on desktop and mobile', async ({
   page,
 }) => {
   await page.goto('/');
@@ -71,7 +71,7 @@ test('mobile chrome stays visible while Miller panes scroll', async ({ page }) =
   await page.setViewportSize({ width: 390, height: 1000 });
   await page.goto('/');
   const app = page.locator('.app-window');
-  await expect(page.getByRole('button', { name: 'Column', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('button', { name: 'List', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
@@ -121,16 +121,10 @@ test('preview image fits within the pane without cropping or overflowing', async
     await expect(page.locator('.preview-image')).toHaveCSS('border-top-width', '0px');
     const frame = await page.locator('.preview-image').boundingBox();
     expect(frame!.width / frame!.height).toBeCloseTo(0.8, 2);
-    const metadata = page.locator('.preview-properties');
-    await expect(metadata).toHaveCSS('height', width <= 620 ? '40px' : '48px');
-    const offsets = await metadata.evaluate((node) => {
-      const bounds = node.getBoundingClientRect();
-      return [...node.children].map((child) => {
-        const box = child.getBoundingClientRect();
-        return Math.abs(box.y + box.height / 2 - (bounds.y + bounds.height / 2));
-      });
-    });
-    for (const offset of offsets) expect(offset).toBeLessThan(1);
+    await expect(page.locator('.preview-subtitle')).toContainText(
+      '2.4 MB · Aug 14, 11:42 · image/png',
+    );
+    await expect(page.locator('.preview-metadata')).toContainText('2400 × 3000 pixels');
     const geometry = await page.locator('.app-preview').evaluate((pane) => {
       const outer = pane.getBoundingClientRect();
       const frame = pane.querySelector('.preview-image')!.getBoundingClientRect();
@@ -174,7 +168,7 @@ test('file actions line up with the toolbar icons', async ({ page }) => {
   await page.goto('/');
   for (const width of [390, 900, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
-    for (const mode of ['Grid', 'Column']) {
+    for (const mode of ['Icons', 'List']) {
       await page.getByRole('button', { name: mode, exact: true }).click();
       const centers = await page.locator('.app-window').evaluate((app) => {
         const x = (node: Element) => {
@@ -203,8 +197,9 @@ test('preview header matches column inset and toolbar action alignment', async (
   for (const width of [900, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.getByRole('button', { name: 'Miller column', exact: true }).click();
+    // The app insets the preview icon 10px, with the same gap before the name.
     const header = page.locator('.preview-title');
-    await expect(header).toHaveCSS('padding-left', '12px');
+    await expect(header).toHaveCSS('padding-left', '9px');
     const offsets = await page.locator('.app-window').evaluate((app) => {
       const center = (node: Element) => {
         const bounds = node.getBoundingClientRect();

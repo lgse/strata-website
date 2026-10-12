@@ -31,18 +31,19 @@ test('all explorer modes, folder selection, file previews, filtering, sorting an
   await page.getByRole('button', { name: 'src', exact: true }).click();
   await expect(page.locator('.preview-meta strong')).toHaveText('main.rs');
   await page.getByRole('button', { name: 'assets', exact: true }).click();
-  await page.getByRole('button', { name: 'Grid', exact: true }).click();
+  await page.getByRole('button', { name: 'Icons', exact: true }).click();
   await expect(page.locator('.browser-area')).toHaveClass(/mode-grid/);
   await expect(page.locator('.folder-chips')).toHaveCount(0);
-  await page.getByRole('button', { name: 'colors.json', exact: true }).click();
+  await page.getByRole('button', { name: /^colors\.json/ }).click();
   await expect(page.locator('.preview-meta strong')).toHaveText('colors.json');
-  await page.getByRole('button', { name: 'Column', exact: true }).click();
+  await page.getByRole('button', { name: 'List', exact: true }).click();
   await expect(page.locator('.table-heading')).toBeVisible();
   const sortOptions = page.locator('.file-pane .pane-sort-options > summary');
   await sortOptions.click();
   await page.getByRole('checkbox', { name: 'Group demo files by type' }).check();
   await sortOptions.click();
-  await expect(page.locator('.file-group-heading')).toHaveCount(3);
+  await expect(page.locator('.file-group-heading')).toHaveCount(8);
+  await expect(page.locator('.file-group-heading').first()).toHaveText('3D models');
   await page.getByRole('button', { name: 'Sort demo files by name' }).click();
   await expect(page.getByRole('button', { name: 'Sort demo files by name' })).toHaveAttribute(
     'aria-pressed',
@@ -50,29 +51,33 @@ test('all explorer modes, folder selection, file previews, filtering, sorting an
   );
   await page.getByRole('button', { name: 'Filter demo folder' }).click();
   await page.getByRole('textbox', { name: 'Filter demo files' }).fill('night');
-  await expect(page.locator('.demo-files .file-row')).toHaveCount(1);
+  await expect(page.locator('.demo-files .file-row')).toHaveCount(2);
   await page.getByRole('textbox', { name: 'Filter demo files' }).fill('no-file-like-this');
   await expect(page.getByText('No matching files.')).toBeVisible();
   await page.getByRole('button', { name: 'Close file search' }).click();
-  await expect(page.locator('.demo-files .file-row')).toHaveCount(4);
+  await expect(page.locator('.demo-files .file-row')).toHaveCount(10);
 });
 
-test('view toggle icon matches the selected mode from either set of controls', async ({ page }) => {
+test('view toggle icon matches the selected mode from either set of controls', async ({
+  page,
+  isMobile,
+}) => {
   await page.goto('/');
   const toggle = page.getByRole('button', { name: 'View options', exact: true });
   const tabs = page.getByRole('group', { name: 'File view mode', exact: true });
-  await expect(toggle.locator('svg')).toHaveClass(/lucide-columns-3/);
+  // Narrow screens default to List once hydrated; wide screens to Miller columns.
+  await expect(toggle.locator('svg')).toHaveClass(isMobile ? /lucide-list\b/ : /lucide-columns-3/);
   for (const mode of [
-    { tab: 'Grid', icon: 'lucide-grid-2x2' },
-    { tab: 'Column', icon: 'lucide-rows-3' },
+    { tab: 'Icons', icon: 'lucide-layout-grid' },
+    { tab: 'List', icon: 'lucide-list\\b' },
     { tab: 'Miller column', icon: 'lucide-columns-3' },
   ]) {
     await tabs.getByRole('button', { name: mode.tab, exact: true }).click();
     await expect(toggle.locator('svg')).toHaveClass(new RegExp(mode.icon));
   }
   for (const mode of [
-    { option: 'Icons', icon: 'lucide-grid-2x2' },
-    { option: 'List', icon: 'lucide-rows-3' },
+    { option: 'Icons', icon: 'lucide-layout-grid' },
+    { option: 'List', icon: 'lucide-list\\b' },
     { option: 'Columns', icon: 'lucide-columns-3' },
   ]) {
     await toggle.click();
@@ -101,7 +106,7 @@ test('native-style toolbar, navigation, settings and window controls work', asyn
   }
   await app.getByRole('button', { name: 'Toggle demo sidebar' }).click();
   await app.getByRole('button', { name: 'src', exact: true }).click();
-  await page.getByRole('button', { name: 'Column', exact: true }).click();
+  await page.getByRole('button', { name: 'List', exact: true }).click();
   await expect(app.locator('.table-heading')).toContainText('Modified');
   await expect(app.locator('.app-preview')).not.toBeVisible();
   await app.getByRole('button', { name: 'Previous demo folder' }).click();
@@ -209,7 +214,7 @@ test('Column icons stay square and pane controls do not overlap at responsive wi
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Column', exact: true }).click();
+  await page.getByRole('button', { name: 'List', exact: true }).click();
   for (const width of [320, 390, 620, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await expect
@@ -329,14 +334,14 @@ test('Miller panes share native icons and keep their controls independent', asyn
   await parent.getByRole('button', { name: 'Filter parent pane' }).click();
   await parent.getByRole('textbox', { name: 'Filter parent entries' }).fill('docs');
   await expect(parent.locator('.folder-row')).toHaveCount(1);
-  await expect(files.locator('.demo-files .file-row')).toHaveCount(4);
+  await expect(files.locator('.demo-files .file-row')).toHaveCount(10);
   if (!isMobile) await files.hover();
   await files.getByRole('button', { name: 'Filter demo folder' }).click();
   await files.getByRole('textbox', { name: 'Filter demo files' }).fill('night');
-  await expect(files.locator('.demo-files .file-row')).toHaveCount(1);
+  await expect(files.locator('.demo-files .file-row')).toHaveCount(2);
   await parent.getByRole('button', { name: 'Close parent filter' }).click();
   await expect(parent.locator('.folder-row')).toHaveCount(3);
-  await expect(files.locator('.demo-files .file-row')).toHaveCount(1);
+  await expect(files.locator('.demo-files .file-row')).toHaveCount(2);
   if (!isMobile) await parent.hover();
   await parent.locator('.pane-sort-options > summary').click();
   await parent.getByRole('button', { name: 'Name: A to Z' }).click();
@@ -353,7 +358,7 @@ test('Miller panes share native icons and keep their controls independent', asyn
   if (!isMobile) {
     await parent.getByRole('button', { name: 'Refresh parent pane' }).click();
     await expect(parent.getByText('Parent pane refreshed')).toBeVisible();
-    await expect(files.locator('.demo-files .file-row')).toHaveCount(1);
+    await expect(files.locator('.demo-files .file-row')).toHaveCount(2);
   }
 });
 
@@ -381,12 +386,44 @@ test('preview formats show their distinct safety boundaries', async ({ page }) =
   await expect(page.getByText('BOUNDED TEXT READER')).toBeVisible();
   await expect(page.getByText('In-process text', { exact: true })).toBeVisible();
   await formats.getByRole('button', { name: 'PDF', exact: true }).click();
-  await expect(page.getByText('field-notes.pdf')).toBeVisible();
+  await expect(page.locator('.preview-demo').getByText('field-notes.pdf')).toBeVisible();
   await formats.getByRole('button', { name: 'Video', exact: true }).click();
-  await expect(page.getByText('Video preview illustration', { exact: true })).toBeVisible();
+  await expect(page.getByText('night-drive', { exact: true })).toBeVisible();
+  await expect(page.getByText('24 fps', { exact: true })).toBeVisible();
   await formats.getByRole('button', { name: 'Audio', exact: true }).click();
-  await expect(page.getByText('midnight-drive.flac')).toBeVisible();
+  await expect(page.getByText('Night Drive', { exact: true })).toBeVisible();
+  await expect(page.getByText('Track 3 of 11', { exact: true })).toBeVisible();
   await expect(page.getByText('ISOLATED PROCESS', { exact: true })).toBeVisible();
+});
+
+test('media previews play, pause, seek and change tracks like the app', async ({ page }) => {
+  await page.goto('/');
+  const preview = page.locator('.preview-demo');
+  await preview.scrollIntoViewIfNeeded();
+  const formats = preview.getByRole('group', { name: 'Preview illustration format' });
+  await formats.getByRole('button', { name: 'Audio', exact: true }).click();
+  const play = preview.getByRole('button', { name: 'Play or pause' });
+  // Reduced motion keeps the demo paused until asked.
+  await expect(play).toHaveAttribute('aria-pressed', 'false');
+  await expect(preview.getByText('0:00', { exact: true })).toBeVisible();
+  await play.click();
+  await expect(play).toHaveAttribute('aria-pressed', 'true');
+  await expect(preview.locator('.media-player')).toHaveAttribute('data-playing', 'true');
+  const seek = preview.getByRole('slider', { name: 'Seek' });
+  await seek.focus();
+  await page.keyboard.press('Shift+ArrowRight');
+  await expect
+    .poll(async () => Number(await seek.getAttribute('aria-valuenow')))
+    .toBeGreaterThanOrEqual(30);
+  await preview.getByRole('button', { name: 'Next track' }).click();
+  await expect(preview.getByText('Track 4 of 11', { exact: true })).toBeVisible();
+  await expect(seek).toHaveAttribute('aria-valuenow', '0');
+  await play.click();
+  await expect(play).toHaveAttribute('aria-pressed', 'false');
+  await formats.getByRole('button', { name: 'Video', exact: true }).click();
+  await preview.getByRole('button', { name: 'Next video' }).click();
+  await expect(page.getByText('ridge-line', { exact: true })).toBeVisible();
+  await expect(preview.getByRole('slider', { name: 'Volume' })).toBeVisible();
 });
 
 test('theme picker shows ten favorites, filters, persists and restores focus', async ({ page }) => {
@@ -541,6 +578,13 @@ test('FAQ disclosures and mobile navigation work', async ({ page, isMobile }) =>
   }
   await page.locator('summary').filter({ hasText: 'What do I need to run Strata?' }).click();
   await expect(page.locator('details[open] > p')).toContainText('GTK 4.12+');
+  // The eleven interface languages, in the app's own spelling, plus layout-aware shortcuts.
+  const languages = page.getByRole('list', { name: 'Interface languages' }).getByRole('listitem');
+  await expect(languages).toHaveCount(11);
+  await expect(languages.filter({ hasText: 'Русский' })).toHaveAttribute('lang', 'ru');
+  await expect(languages.filter({ hasText: '日本語' })).toHaveAttribute('lang', 'ja');
+  await page.locator('summary').filter({ hasText: 'Which languages does Strata speak?' }).click();
+  await expect(page.locator('details[open] > p').last()).toContainText('Cyrillic');
 });
 
 for (const { id: theme } of siteThemes) {

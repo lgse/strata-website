@@ -45,6 +45,9 @@ export function themeVariables(theme: Theme): Record<string, string> {
         .map(([key, value]) => [`--${key.replaceAll('_', '-')}`, value]),
     ),
     '--contrast': isLight(theme) ? '#10121b' : '#ffffff',
+    // The darker and lighter of the theme's own background and text, for shading artwork.
+    '--dark': isLight(theme) ? theme.text : theme.background,
+    '--light': isLight(theme) ? theme.background : theme.text,
     '--shade': isLight(theme) ? '#ffffff' : '#080911',
     '--faint-weight': isLight(theme) ? '82%' : '68%',
     '--soft-weight': isLight(theme) ? '88%' : '76%',

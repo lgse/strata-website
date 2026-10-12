@@ -11,6 +11,7 @@ import {
   LockKeyhole,
   ShieldCheck,
 } from 'lucide-react';
+import { AudioPlayerDemo, VideoPlayerDemo } from './media-player-demo';
 const types = [
   { id: 'image', label: 'Images', icon: FileImage },
   { id: 'code', label: 'Code', icon: FileCode2 },
@@ -88,43 +89,8 @@ export function PreviewDemo() {
                 </div>
               </>
             )}
-            {type === 'video' && (
-              <div className="video-illustration">
-                <Image
-                  src="/art/night-drive.svg"
-                  alt="Video-preview illustration of a mountain road"
-                  width={400}
-                  height={200}
-                />
-                <span className="gpu-pill">
-                  <Film size={12} /> GPU ACCELERATED
-                </span>
-                <div className="video-timeline">
-                  <span>00:12</span>
-                  <i />
-                  <span>01:48</span>
-                </div>
-                <span className="video-caption">Video preview illustration</span>
-              </div>
-            )}
-            {type === 'audio' && (
-              <div className="audio-illustration">
-                <AudioLines size={30} />
-                <strong>midnight-drive.flac</strong>
-                <div className="waveform">
-                  {Array.from({ length: 38 }, (_, i) => (
-                    <i
-                      key={i}
-                      style={{
-                        height: `${15 + Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.28)) * 65}px`,
-                        animationDelay: `${i * 0.05}s`,
-                      }}
-                    />
-                  ))}
-                </div>
-                <span>Audio previews, without leaving your flow.</span>
-              </div>
-            )}
+            {type === 'video' && <VideoPlayerDemo />}
+            {type === 'audio' && <AudioPlayerDemo />}
           </div>
           <div className="sandbox-permissions">
             <span>
