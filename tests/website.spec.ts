@@ -578,9 +578,10 @@ test('FAQ disclosures and mobile navigation work', async ({ page, isMobile }) =>
   }
   await page.locator('summary').filter({ hasText: 'What do I need to run Strata?' }).click();
   await expect(page.locator('details[open] > p')).toContainText('GTK 4.12+');
-  // The twelve interface languages, in the app's own spelling, plus layout-aware shortcuts.
+  // The thirteen interface languages, in the app's own spelling, plus layout-aware shortcuts.
   const languages = page.getByRole('list', { name: 'Interface languages' }).getByRole('listitem');
-  await expect(languages).toHaveCount(12);
+  await expect(languages).toHaveCount(13);
+  await expect(languages.filter({ hasText: 'Magyar' })).toHaveAttribute('lang', 'hu');
   await expect(languages.filter({ hasText: '正體中文' })).toHaveAttribute('lang', 'zh-TW');
   await expect(languages.filter({ hasText: 'Русский' })).toHaveAttribute('lang', 'ru');
   await expect(languages.filter({ hasText: '日本語' })).toHaveAttribute('lang', 'ja');

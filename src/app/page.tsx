@@ -129,6 +129,7 @@ const features = [
 const languages: [code: string, label: string][] = [
   ['en', 'English'],
   ['fr', 'Français'],
+  ['hu', 'Magyar'],
   ['de', 'Deutsch'],
   ['es', 'Español'],
   ['ja', '日本語'],
@@ -165,7 +166,7 @@ const faqs = [
   {
     question: 'Which languages does Strata speak?',
     answer:
-      'Twelve: English, French, German, Spanish, Japanese, Brazilian Portuguese, Korean, Vietnamese, Italian, Russian, Simplified Chinese, and Traditional Chinese. Pick one in Settings or follow the system locale. Keyboard shortcuts are layout-aware too: a key pressed on a Cyrillic or other non-Latin layout resolves to its QWERTY position, so the same bindings work everywhere.',
+      'Thirteen: English, French, Hungarian, German, Spanish, Japanese, Brazilian Portuguese, Korean, Vietnamese, Italian, Russian, Simplified Chinese, and Traditional Chinese. Pick one in Settings or follow the system locale. Keyboard shortcuts are layout-aware too: a key pressed on a Cyrillic or other non-Latin layout resolves to its QWERTY position, so the same bindings work everywhere.',
   },
   {
     question: 'Is it really free and open source?',
@@ -435,7 +436,7 @@ export default function Home() {
             <div className="languages-heading">
               <Languages size={20} strokeWidth={1.5} />
               <div>
-                <strong>Speaks 12 languages.</strong>
+                <strong>Speaks 13 languages.</strong>
                 <p>
                   Shortcuts work on any keyboard layout. A key pressed on a Cyrillic or other
                   non-Latin layout resolves to its QWERTY position, so j and k still move you.
